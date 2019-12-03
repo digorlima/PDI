@@ -1532,3 +1532,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   allImages: {fileID: 0}
+  imagePlaceHolder: {fileID: 0}
