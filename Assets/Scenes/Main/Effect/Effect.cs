@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class Effect : MonoBehaviour
 {
-    enum Effects { ADD, SUB, MULT, DIV };
+    enum Effects { ADD, SUB, MULT, DIV, AND, OR, XOR };
 
     // Variáveis Públicas ------
     public GameObject allImages;
@@ -67,6 +67,18 @@ public class Effect : MonoBehaviour
             
             case (int)Effects.DIV:
                 Div();
+                break;
+
+            case (int)Effects.AND:
+                And();
+                break;
+
+            case (int)Effects.OR:
+                Or();
+                break;
+
+            case (int)Effects.XOR:
+                Xor();
                 break;
         }
     }
@@ -148,8 +160,11 @@ public class Effect : MonoBehaviour
         for(int row = 0; row < texA.width; row++) {
             for (int column = 0; column < texA.height; column++) {
                 for (int channel = 0; channel < 3; channel++) {
-                    sum[channel] = texA.GetPixel(row, column)[channel] * 
-                                   texB.GetPixel(row, column)[channel];
+                    int pixelA = (int)(texA.GetPixel(row, column)[channel] * 255);
+                    int pixelB = (int)(texB.GetPixel(row, column)[channel] * 255);
+                    int pixel = pixelA * pixelB;
+
+                    sum[channel] = pixel / 255.0f;
                 }
 
                 texSum.SetPixel(row, column, new Color(sum[0], sum[1], sum[2]));
@@ -179,8 +194,118 @@ public class Effect : MonoBehaviour
         for(int row = 0; row < texA.width; row++) {
             for (int column = 0; column < texA.height; column++) {
                 for (int channel = 0; channel < 3; channel++) {
-                    sum[channel] = texA.GetPixel(row, column)[channel] / 
-                                   texB.GetPixel(row, column)[channel];
+                    int pixelA = (int)(texA.GetPixel(row, column)[channel] * 255);
+                    int pixelB = (int)(texB.GetPixel(row, column)[channel] * 255);
+
+                    int pixel = 0;
+
+                    if(pixelA != 0 && pixelB != 0){
+                        pixel = pixelA / pixelB;
+                    }
+                    
+                    sum[channel] = pixel / 255.0f;
+                }
+
+                texSum.SetPixel(row, column, new Color(sum[0], sum[1], sum[2]));
+            }
+        }
+        
+        texSum.Apply();
+        
+        imagePlaceHolder.GetComponent<Image>().sprite = Sprite.Create(texSum, new Rect(0, 0, texSum.width, texSum.height), new Vector2(0.5f, 0.5f), 100.0f);
+        imagePlaceHolder.SetActive(true);
+        
+        SetSize(-1);
+        images.Clear();
+    }
+
+    private void And() {
+        Image a = images[0];
+        Image b = images[1];
+
+        float[] sum = new float[3];
+
+        var texA = a.sprite.texture;
+        var texB = b.sprite.texture;
+
+        var texSum = new Texture2D(texA.width, texA.height);
+
+        for(int row = 0; row < texA.width; row++) {
+            for (int column = 0; column < texA.height; column++) {
+                for (int channel = 0; channel < 3; channel++) {
+                    int pixelA = (int)(texA.GetPixel(row, column)[channel] * 255);
+                    int pixelB = (int)(texB.GetPixel(row, column)[channel] * 255);
+                    int pixel = pixelA & pixelB;
+
+                    sum[channel] = pixel / 255.0f;
+                }
+
+                texSum.SetPixel(row, column, new Color(sum[0], sum[1], sum[2]));
+            }
+        }
+        
+        texSum.Apply();
+        
+        imagePlaceHolder.GetComponent<Image>().sprite = Sprite.Create(texSum, new Rect(0, 0, texSum.width, texSum.height), new Vector2(0.5f, 0.5f), 100.0f);
+        imagePlaceHolder.SetActive(true);
+        
+        SetSize(-1);
+        images.Clear();
+    }
+    
+    private void Or() {
+        Image a = images[0];
+        Image b = images[1];
+
+        float[] sum = new float[3];
+
+        var texA = a.sprite.texture;
+        var texB = b.sprite.texture;
+
+        var texSum = new Texture2D(texA.width, texA.height);
+
+        for(int row = 0; row < texA.width; row++) {
+            for (int column = 0; column < texA.height; column++) {
+                for (int channel = 0; channel < 3; channel++) {
+                    int pixelA = (int)(texA.GetPixel(row, column)[channel] * 255);
+                    int pixelB = (int)(texB.GetPixel(row, column)[channel] * 255);
+                    int pixel = pixelA | pixelB;
+
+                    sum[channel] = pixel / 255.0f;
+                }
+
+                texSum.SetPixel(row, column, new Color(sum[0], sum[1], sum[2]));
+            }
+        }
+        
+        texSum.Apply();
+        
+        imagePlaceHolder.GetComponent<Image>().sprite = Sprite.Create(texSum, new Rect(0, 0, texSum.width, texSum.height), new Vector2(0.5f, 0.5f), 100.0f);
+        imagePlaceHolder.SetActive(true);
+        
+        SetSize(-1);
+        images.Clear();
+    }
+
+    private void Xor() {
+        Image a = images[0];
+        Image b = images[1];
+
+        float[] sum = new float[3];
+
+        var texA = a.sprite.texture;
+        var texB = b.sprite.texture;
+
+        var texSum = new Texture2D(texA.width, texA.height);
+
+        for(int row = 0; row < texA.width; row++) {
+            for (int column = 0; column < texA.height; column++) {
+                for (int channel = 0; channel < 3; channel++) {
+                    int pixelA = (int)(texA.GetPixel(row, column)[channel] * 255);
+                    int pixelB = (int)(texB.GetPixel(row, column)[channel] * 255);
+                    int pixel = pixelA ^ pixelB;
+
+                    sum[channel] = pixel / 255.0f;
                 }
 
                 texSum.SetPixel(row, column, new Color(sum[0], sum[1], sum[2]));

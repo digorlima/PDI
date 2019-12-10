@@ -23,9 +23,7 @@ public class OpenFile : MonoBehaviour
     {
         string path = EditorUtility.OpenFilePanel("Open a image", "", "png;*jpg;*jpeg;*pgm;*");
         string extension = "";
-        extension = extension + path[path.Length - 3];
-        extension = extension + path[path.Length - 2];
-        extension = extension + path[path.Length - 1];
+        extension = "" + path[path.Length - 3] + path[path.Length - 2] + path[path.Length - 1];
 
         Texture2D tex;
         
@@ -81,22 +79,19 @@ public class OpenFile : MonoBehaviour
     Texture2D readPgm(string path)
     {
         string text = System.IO.File.ReadAllText(path);
-        text = text.Remove(0, 4);
-
+        
         string width = "", height = "";
-        int i = 0;
-        for (i = 0; text[i] != ' ' ; i++)
+        int i = 4;
+        for (; text[i] != ' ' ; i++)
         {
             width = width + text[i];
         }
-        text = text.Remove(0, i+1);
-        for (i = 0; text[i] != '\r'; i++)
+        i++;
+        for (; text[i] != '\r'; i++)
         {
             height = height + text[i];
         }
-        text = text.Remove(0, i+2);
-        
-        text = text.Remove(0, 5);
+        i += 5;
         
         text = Regex.Replace(text, @"\r\n", " ");
 
@@ -106,14 +101,12 @@ public class OpenFile : MonoBehaviour
         for(int row = int.Parse(width) - 1; row > 0; row--) {
             for (int column = 0; column < texture.height; column++) {
                 strPixel = "";
-                for (i = 0; text[i] != ' '; i++)
+                for (; text[i] != ' '; i++)
                 {
                     strPixel += text[i];
                 }
 
-                //Debug.Log(row + " " + column);
-
-                text = text.Remove(0, i + 1);
+                i++;
                 
                 int pixel = int.Parse(strPixel);
 
