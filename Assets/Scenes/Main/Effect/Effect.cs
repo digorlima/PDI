@@ -1,16 +1,24 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Effect : MonoBehaviour
-{
-    enum Effects { ADD, SUB, MULT, DIV, AND, OR, XOR };
+public class Effect : MonoBehaviour {
+    public enum Effects {
+        ADD, SUB, MULT, DIV, AND, OR, XOR,      // Aritimetica 7
+        PCOR,                                   // Pseudocor 1
+        CONTRAST, NEGATIVE,                     // Realce 2
+        HORIZONTALFLIP, VERTICALFLIP, FLIPBOTH,  // Transformation 2
+        BORDERDETECTION                           // Segmentation 1
+    }
 
-    // Variáveis Públicas ------
+    // Variáveis Públicas -------------
     public GameObject allImages;
     public GameObject imagePlaceHolder;
-    // -------------------------
+
+    public Slider borderDetection;
+    // --------------------------------
 
     // Variáveis Privadas -------------------------
     private int effect;
@@ -18,12 +26,12 @@ public class Effect : MonoBehaviour
     private bool buffer = false;
     private int size = -1;
     private List<Image> images = new List<Image>();
-
+    private Texture2D texture;
     private Image m_image;
     // --------------------------------------------
 
     // Funções da Unity -----------
-    private void Update() {
+    public void Update() {
         if (images.Count == size) {
             SetState(false);
             DoEffect();
@@ -31,17 +39,15 @@ public class Effect : MonoBehaviour
 
         if (buffer != state) {
             Select();
-        } 
+        }
 
         buffer = state;
     }
     // ----------------------------
 
     // Minhas Funções ----------------------------------------------------
-    private void Select() {
-        Component[] toggles = allImages.GetComponentsInChildren<Toggle>();
-
-        foreach (Toggle joint in toggles) {
+    public void Select() {
+        foreach (Toggle joint in allImages.GetComponentsInChildren<Toggle>()) {
             joint.interactable = state;
             joint.isOn = false;
         }
@@ -54,278 +60,268 @@ public class Effect : MonoBehaviour
     public void DoEffect() {
         switch (effect) {
             case (int)Effects.ADD:
-                Add();
-                break; 
-            
+                texture = Arithmetic.Add(images[0], images[1]);
+                break;
+
             case (int)Effects.SUB:
-                Sub();
+                texture = Arithmetic.Sub(images[0], images[1]);
                 break;
-            
+
             case (int)Effects.MULT:
-                Mult();
+                texture = Arithmetic.Mult(images[0], images[1]);
                 break;
-            
+
             case (int)Effects.DIV:
-                Div();
+                texture = Arithmetic.Div(images[0], images[1]);
                 break;
 
             case (int)Effects.AND:
-                And();
+                texture = Arithmetic.And(images[0], images[1]);
                 break;
 
             case (int)Effects.OR:
-                Or();
+                texture = Arithmetic.Or(images[0], images[1]);
                 break;
 
             case (int)Effects.XOR:
-                Xor();
+                texture = Arithmetic.Xor(images[0], images[1]);
+                break;
+
+            case (int)Effects.PCOR:
+                PCor();
+                break;
+
+            case (int)Effects.CONTRAST:
+                Contrast();
+                break;
+
+            case (int)Effects.NEGATIVE:
+                Negative();
+                break;
+
+            case (int)Effects.HORIZONTALFLIP:
+                Flip(0);
+                break;
+
+            case (int)Effects.VERTICALFLIP:
+                Flip(1);
+                break;
+
+            case (int)Effects.FLIPBOTH:
+                Flip(2);
+                break;
+
+            case (int)Effects.BORDERDETECTION:
+                BorderDetection();
                 break;
         }
     }
 
-    // -----------------
-    private void Add() {
-        Image a = images[0];
-        Image b = images[1];
+    public void Clean() {
+        Apply();
 
-        float[] sum = new float[3];
-
-        var texA = a.sprite.texture;
-        var texB = b.sprite.texture;
-
-        var texSum = new Texture2D(texA.width, texA.height);
-
-        for(int row = 0; row < texA.width; row++) {
-            for (int column = 0; column < texA.height; column++) {
-                for (int channel = 0; channel < 3; channel++) {
-                    sum[channel] = texA.GetPixel(row, column)[channel] + 
-                                   texB.GetPixel(row, column)[channel];
-                }
-
-                texSum.SetPixel(row, column, new Color(sum[0], sum[1], sum[2]));
-            }
-        }
-        
-        texSum.Apply();
-        
-        imagePlaceHolder.GetComponent<Image>().sprite = Sprite.Create(texSum, new Rect(0, 0, texSum.width, texSum.height), new Vector2(0.5f, 0.5f), 100.0f);
-        imagePlaceHolder.SetActive(true);
-        
         SetSize(-1);
         images.Clear();
     }
     
-    private void Sub() {
-        Image a = images[0];
-        Image b = images[1];
+    public void Apply() {
+        imagePlaceHolder.GetComponent<Image>().sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100.0f);
+        imagePlaceHolder.SetActive(true);
+    }
 
-        float[] sum = new float[3];
+    public void PCor() {
+        Image a = images[0];
 
         var texA = a.sprite.texture;
-        var texB = b.sprite.texture;
+        texture = new Texture2D(texA.width, texA.height);
 
-        var texSum = new Texture2D(texA.width, texA.height);
+        float[] red = { 0, 0, 1.0f };
+        float[] orange = { 0, 0, 5f, 1.0f };
+        float[] yellow = { 0, 1.0f, 1.0f };
+        float[] green = { 0, 1.0f, 1.0f };
+        float[] blue = { 0, 0, 1.0f };
+        float[] purple = { 0.5098f, 0, 0.2941f };
+        float[] violet = { 1.0f, 0, 0.5608f };
 
-        for(int row = 0; row < texA.width; row++) {
-            for (int column = 0; column < texA.height; column++) {
-                for (int channel = 0; channel < 3; channel++) {
-                    sum[channel] = texA.GetPixel(row, column)[channel] -
-                                   texB.GetPixel(row, column)[channel];
+        for (int column = 0; column < texture.width; column++) {
+            for (int row = 0; row < texture.height; row++) {
+                float x = texA.GetPixel(column, row)[0];
+                if (x > 0 && x < 0.1f) {
+                    texture.SetPixel(column, row, new Color(red[0], red[1], red[2]));
+                } else if (x > 0.1429f && x < 0.1429f * 2) {
+                    texture.SetPixel(column, row, new Color(orange[0], orange[1], orange[2]));
+                } else if (x > 0.1429f * 2 && x < 0.1429f * 3) {
+                    texture.SetPixel(column, row, new Color(yellow[0], yellow[1], yellow[2]));
+                } else if (x > 0.1429f * 3 && x < 0.1429f * 4) {
+                    texture.SetPixel(column, row, new Color(green[0], green[1], green[2]));
+                } else if (x > 0.1429f * 4 && x < 0.1429f * 5) {
+                    texture.SetPixel(column, row, new Color(purple[0], purple[1], purple[2]));
+                } else if (x > 0.1429f * 5 && x < 0.1429f * 6) {
+                    texture.SetPixel(column, row, new Color(violet[0], violet[1], violet[2]));
+                } else if (x > 0.1429f * 6 && x < 0.1429f * 7) {
+                    texture.SetPixel(column, row, new Color(blue[0], blue[1], blue[2]));
                 }
-
-                texSum.SetPixel(row, column, new Color(sum[0], sum[1], sum[2]));
             }
         }
-        
-        texSum.Apply();
-        
-        imagePlaceHolder.GetComponent<Image>().sprite = Sprite.Create(texSum, new Rect(0, 0, texSum.width, texSum.height), new Vector2(0.5f, 0.5f), 100.0f);
-        imagePlaceHolder.SetActive(true);
-        
-        SetSize(-1);
-        images.Clear();
-    }
-    
-    private void Mult() {
-        Image a = images[0];
-        Image b = images[1];
 
-        float[] sum = new float[3];
+        texture.Apply();
+
+        Clean();
+    }
+
+    public void Contrast() {
+        Image a = images[0];
 
         var texA = a.sprite.texture;
-        var texB = b.sprite.texture;
+        texture = new Texture2D(texA.width, texA.height);
 
-        var texSum = new Texture2D(texA.width, texA.height);
+        float hi = 0;
 
-        for(int row = 0; row < texA.width; row++) {
-            for (int column = 0; column < texA.height; column++) {
+        for (int column = 0; column < texture.width; column++) {
+            for (int row = 0; row < texture.height; row++) {
                 for (int channel = 0; channel < 3; channel++) {
-                    int pixelA = (int)(texA.GetPixel(row, column)[channel] * 255);
-                    int pixelB = (int)(texB.GetPixel(row, column)[channel] * 255);
-                    int pixel = pixelA * pixelB;
+                    float pixel = texA.GetPixel(column, row)[channel];
 
-                    sum[channel] = pixel / 255.0f;
-                }
-
-                texSum.SetPixel(row, column, new Color(sum[0], sum[1], sum[2]));
-            }
-        }
-        
-        texSum.Apply();
-        
-        imagePlaceHolder.GetComponent<Image>().sprite = Sprite.Create(texSum, new Rect(0, 0, texSum.width, texSum.height), new Vector2(0.5f, 0.5f), 100.0f);
-        imagePlaceHolder.SetActive(true);
-        
-        SetSize(-1);
-        images.Clear();
-    }
-    
-    private void Div() {
-        Image a = images[0];
-        Image b = images[1];
-
-        float[] sum = new float[3];
-
-        var texA = a.sprite.texture;
-        var texB = b.sprite.texture;
-
-        var texSum = new Texture2D(texA.width, texA.height);
-
-        for(int row = 0; row < texA.width; row++) {
-            for (int column = 0; column < texA.height; column++) {
-                for (int channel = 0; channel < 3; channel++) {
-                    int pixelA = (int)(texA.GetPixel(row, column)[channel] * 255);
-                    int pixelB = (int)(texB.GetPixel(row, column)[channel] * 255);
-
-                    int pixel = 0;
-
-                    if(pixelA != 0 && pixelB != 0){
-                        pixel = pixelA / pixelB;
+                    if (pixel > hi) {
+                        hi = pixel;
                     }
-                    
-                    sum[channel] = pixel / 255.0f;
                 }
-
-                texSum.SetPixel(row, column, new Color(sum[0], sum[1], sum[2]));
             }
         }
-        
-        texSum.Apply();
-        
-        imagePlaceHolder.GetComponent<Image>().sprite = Sprite.Create(texSum, new Rect(0, 0, texSum.width, texSum.height), new Vector2(0.5f, 0.5f), 100.0f);
-        imagePlaceHolder.SetActive(true);
-        
-        SetSize(-1);
-        images.Clear();
+
+        float x = 1.0f / hi;
+
+        for (int column = 0; column < texture.width; column++) {
+            for (int row = 0; row < texture.height; row++) {
+                float value = texA.GetPixel(column, row)[0] * x;
+
+                texture.SetPixel(column, row, new Color(value, value, value));
+            }
+        }
+
+        texture.Apply();
+
+        Clean();
     }
 
-    private void And() {
+    public void Negative() {
         Image a = images[0];
-        Image b = images[1];
-
-        float[] sum = new float[3];
 
         var texA = a.sprite.texture;
-        var texB = b.sprite.texture;
+        texture = new Texture2D(texA.width, texA.height);
 
-        var texSum = new Texture2D(texA.width, texA.height);
+        for (int column = 0; column < texture.width; column++) {
+            for (int row = 0; row < texture.height; row++) {
+                float value = 0.0f + Math.Abs(texA.GetPixel(column, row)[0] - 1.0f);
 
-        for(int row = 0; row < texA.width; row++) {
-            for (int column = 0; column < texA.height; column++) {
-                for (int channel = 0; channel < 3; channel++) {
-                    int pixelA = (int)(texA.GetPixel(row, column)[channel] * 255);
-                    int pixelB = (int)(texB.GetPixel(row, column)[channel] * 255);
-                    int pixel = pixelA & pixelB;
-
-                    sum[channel] = pixel / 255.0f;
-                }
-
-                texSum.SetPixel(row, column, new Color(sum[0], sum[1], sum[2]));
+                texture.SetPixel(column, row, new Color(value, value, value));
             }
         }
-        
-        texSum.Apply();
-        
-        imagePlaceHolder.GetComponent<Image>().sprite = Sprite.Create(texSum, new Rect(0, 0, texSum.width, texSum.height), new Vector2(0.5f, 0.5f), 100.0f);
-        imagePlaceHolder.SetActive(true);
-        
-        SetSize(-1);
-        images.Clear();
-    }
-    
-    private void Or() {
-        Image a = images[0];
-        Image b = images[1];
 
-        float[] sum = new float[3];
+        texture.Apply();
 
-        var texA = a.sprite.texture;
-        var texB = b.sprite.texture;
-
-        var texSum = new Texture2D(texA.width, texA.height);
-
-        for(int row = 0; row < texA.width; row++) {
-            for (int column = 0; column < texA.height; column++) {
-                for (int channel = 0; channel < 3; channel++) {
-                    int pixelA = (int)(texA.GetPixel(row, column)[channel] * 255);
-                    int pixelB = (int)(texB.GetPixel(row, column)[channel] * 255);
-                    int pixel = pixelA | pixelB;
-
-                    sum[channel] = pixel / 255.0f;
-                }
-
-                texSum.SetPixel(row, column, new Color(sum[0], sum[1], sum[2]));
-            }
-        }
-        
-        texSum.Apply();
-        
-        imagePlaceHolder.GetComponent<Image>().sprite = Sprite.Create(texSum, new Rect(0, 0, texSum.width, texSum.height), new Vector2(0.5f, 0.5f), 100.0f);
-        imagePlaceHolder.SetActive(true);
-        
-        SetSize(-1);
-        images.Clear();
+        Clean();
     }
 
-    private void Xor() {
-        Image a = images[0];
-        Image b = images[1];
-
-        float[] sum = new float[3];
-
-        var texA = a.sprite.texture;
-        var texB = b.sprite.texture;
-
-        var texSum = new Texture2D(texA.width, texA.height);
-
-        for(int row = 0; row < texA.width; row++) {
-            for (int column = 0; column < texA.height; column++) {
-                for (int channel = 0; channel < 3; channel++) {
-                    int pixelA = (int)(texA.GetPixel(row, column)[channel] * 255);
-                    int pixelB = (int)(texB.GetPixel(row, column)[channel] * 255);
-                    int pixel = pixelA ^ pixelB;
-
-                    sum[channel] = pixel / 255.0f;
-                }
-
-                texSum.SetPixel(row, column, new Color(sum[0], sum[1], sum[2]));
+    public void HorizontalFlip(Texture2D texA, Texture2D texture) {
+        for (int row = 0; row < texture.height; row++) {
+            for (int column = 0, column2 = texture.width - 1; column < texture.height; column++, column2--) {
+                var pixel = texA.GetPixel(column, row);
+                texture.SetPixel(column, row, texA.GetPixel(column2, row));
+                texture.SetPixel(column2, row, pixel);
             }
         }
-        
-        texSum.Apply();
-        
-        imagePlaceHolder.GetComponent<Image>().sprite = Sprite.Create(texSum, new Rect(0, 0, texSum.width, texSum.height), new Vector2(0.5f, 0.5f), 100.0f);
-        imagePlaceHolder.SetActive(true);
-        
-        SetSize(-1);
-        images.Clear();
+    }
+
+    public void VerticalFlip(Texture2D texA, Texture2D texture) {
+        for (int column = 0; column < texture.width; column++) {
+            for (int row = 0, row2 = texture.height - 1; row < texture.height/2; row++, row2--) {
+                var pixel = texA.GetPixel(column, row);
+                texture.SetPixel(column, row, texA.GetPixel(column, row2));
+                texture.SetPixel(column, row2, pixel);
+            }
+        }
+    }
+
+    public void Flip(int option) {
+        Image a = images[0];
+
+        var texA = a.sprite.texture;
+        texture = new Texture2D(texA.width, texA.height);
+
+        switch (option) {
+            case 0:
+                HorizontalFlip(texA, texture);
+                break;
+            case 1:
+                VerticalFlip(texA, texture);
+                break;
+            case 2:
+                HorizontalFlip(texA, texture);
+                VerticalFlip(texture, texture);
+                break;
+        }
+
+        texture.Apply();
+        Clean();
     }
     // -----------------
+
+    public void BorderDetection() {
+        Image a = images[0];
+
+        var texA = a.sprite.texture;
+        texture = new Texture2D(texA.width, texA.height);
+
+        float previous = -1.0f;
+
+        for (int column = 0; column < texture.width; column++)
+        {
+            for (int row = 0; row < texture.height; row++)
+            {
+                //float sum = 0.0f;
+                
+                float pixel = texA.GetPixel(column, row)[0];
+                    
+                if (pixel > previous + borderDetection.value || pixel < previous - borderDetection.value)
+                {
+                    texture.SetPixel(column, row, new Color(1.0f, 1.0f, 1.0f));
+                }
+                else
+                {
+                    texture.SetPixel(column, row, new Color(0, 0, 0));
+                }
+    
+                previous = pixel;
+            }
+//                for (int channel = 0; channel < 3; channel++)
+//                {
+//                    float pixel = texA.GetPixel(column, row)[channel];
+//                    
+//                    if (pixel > previous + borderDetection.value || pixel < previous - borderDetection.value)
+//                    {
+//                        texture.SetPixel(column, row, new Color(sum + (1.0f/3.0f), sum + (1.0f/3.0f), sum + (1.0f/3.0f)));
+//                        sum += (1.0f/3.0f);
+//                    }
+//                    else
+//                    {
+//                        texture.SetPixel(column, row, new Color(sum, sum, sum));
+//                    }
+//    
+//                    previous = pixel;
+//                }
+//            }
+        }
+
+        texture.Apply();
+
+        Apply();
+    }
 
     // Gets and Sets ------------------------------------------
     public bool GetState() { return state; }
     public void SetState(bool state) { this.state = state; }
-    
+
     public int GetSize() { return size; }
     public void SetSize(int size) { this.size = size; }
 
