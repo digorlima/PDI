@@ -2,12 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0003da8b-7c1d-455e-963a-39079d70f8d0" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.PDI/.idea/contentModel.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.PDI/.idea/contentModel.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.PDI/.idea/indexLayout.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.PDI/.idea/indexLayout.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.PDI/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.PDI/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Main/Effect/Effect.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Main/Effect/Effect.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Main/Main.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Main/Main.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Main/OpenFile.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Main/OpenFile.cs" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -99,7 +94,7 @@
       <workItem from="1578248767628" duration="264000" />
       <workItem from="1578260053157" duration="12789000" />
       <workItem from="1578805015688" duration="2151000" />
-      <workItem from="1579027011989" duration="6755000" />
+      <workItem from="1579027011989" duration="7367000" />
     </task>
     <servers />
   </component>

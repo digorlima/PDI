@@ -108,7 +108,7 @@ public class Arithmetic : MonoBehaviour
         }
         
         texSum.Apply();
-        
+
         return texSum;
     }
 
