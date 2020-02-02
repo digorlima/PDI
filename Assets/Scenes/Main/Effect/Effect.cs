@@ -8,12 +8,12 @@ public class Effect : MonoBehaviour
 {
     public enum Effects
     {
-        ADD, SUB, MULT, DIV, AND, OR, XOR,      // Aritimetica 7
-        PCOR,                                   // Pseudocor 1
-        CONTRAST, NEGATIVE,                     // Realce 2
-        HORIZONTALFLIP, VERTICALFLIP, FLIPBOTH,  // Transformation 2
-        BORDERDETECTION,                           // Segmentation 1
-        AVERAGE3, AVERAGE5, MEDIAN3, MEDIAN5, MODE3, MODE5
+        ADD, SUB, MULT, DIV, AND, OR, XOR,      
+        PCOR,                                   
+        CONTRAST, NEGATIVE,                     
+        HORIZONTALFLIP, VERTICALFLIP, FLIPBOTH,  
+        BORDERDETECTION,                           
+        AVERAGE3, AVERAGE5, MEDIAN3, MEDIAN5, MODE3, MODE5, MINIMUM3, MINIMUM5, MAXIMUM3, MAXIMUM5
     }
 
     // Variáveis Públicas -------------
@@ -30,9 +30,16 @@ public class Effect : MonoBehaviour
     private List<Image> images = new List<Image>();
     private Texture2D texture;
     private Image m_image;
+
+    private Image m_image1;
     // --------------------------------------------
 
     // Funções da Unity -----------
+    private void Start()
+    {
+        m_image1 = imagePlaceHolder.GetComponent<Image>();
+    }
+
     public void Update()
     {
         if (images.Count == size)
@@ -148,6 +155,22 @@ public class Effect : MonoBehaviour
             case (int)Effects.MODE5:
                 Mode(5);
                 break;
+            
+            case (int)Effects.MINIMUM3:
+                Minimum(3);
+                break;
+
+            case (int)Effects.MINIMUM5:
+                Minimum(5);
+                break;
+            
+            case (int)Effects.MAXIMUM3:
+                Maximum(3);
+                break;
+
+            case (int)Effects.MAXIMUM5:
+                Maximum(5);
+                break;
         }
     }
 
@@ -161,7 +184,7 @@ public class Effect : MonoBehaviour
     {
         texture.Apply();
 
-        imagePlaceHolder.GetComponent<Image>().sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100.0f);
+        m_image1.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100.0f);
         imagePlaceHolder.SetActive(true);
     }
 
@@ -332,7 +355,6 @@ public class Effect : MonoBehaviour
         Apply();
         Clean();
     }
-    // -----------------
 
     public void BorderDetection()
     {
@@ -390,7 +412,7 @@ public class Effect : MonoBehaviour
         Apply();
     }
 
-    public void Average(int type = 3)
+    public void Average(int type)
     {
         Image a = images[0];
 
@@ -425,7 +447,7 @@ public class Effect : MonoBehaviour
         Clean();
     }
     
-    public void Median(int type = 3)
+    public void Median(int type)
     {
         Image a = images[0];
 
@@ -462,7 +484,7 @@ public class Effect : MonoBehaviour
         Clean();
     }
     
-    public void Mode(int type = 3)
+    public void Mode(int type)
     {
         Image a = images[0];
 
@@ -510,6 +532,121 @@ public class Effect : MonoBehaviour
             }
         }
 
+        Apply();
+        Clean();
+    }
+    
+    public void Minimum(int type)
+    {
+        Image a = images[0];
+
+        var texA = a.sprite.texture;
+        texture = new Texture2D(texA.width, texA.height);
+
+        int start = (int)Math.Floor(type / 2.0f);
+
+        for (int column = start; column < texture.width; column++)
+        {
+            for (int row = start; row < texture.height; row++)
+            {
+
+                float minimum = 1.0f;
+
+                for (int averageRow = -start; averageRow <= start; averageRow++)
+                {
+                    for (int averageCol = -start; averageCol <= start; averageCol++)
+                    {
+                        if (minimum > texA.GetPixel(averageCol + column, averageRow + row)[0])
+                        {
+                            minimum = texA.GetPixel(averageCol + column, averageRow + row)[0];
+                        }
+                    }
+                }
+                
+                texture.SetPixel(column, row, new Color(minimum, minimum, minimum));
+            }
+        }
+
+        Apply();
+        Clean();
+    }
+    
+    public void Maximum(int type)
+    {
+        Image a = images[0];
+
+        var texA = a.sprite.texture;
+        texture = new Texture2D(texA.width, texA.height);
+
+        int start = (int)Math.Floor(type / 2.0f);
+
+        for (int column = start; column < texture.width; column++)
+        {
+            for (int row = start; row < texture.height; row++)
+            {
+
+                float maximum = 0.0f;
+
+                for (int averageRow = -start; averageRow <= start; averageRow++)
+                {
+                    for (int averageCol = -start; averageCol <= start; averageCol++)
+                    {
+                        if (maximum < texA.GetPixel(averageCol + column, averageRow + row)[0])
+                        {
+                            maximum = texA.GetPixel(averageCol + column, averageRow + row)[0];
+                        }
+                    }
+                }
+                
+                texture.SetPixel(column, row, new Color(maximum, maximum, maximum));
+            }
+        }
+
+        Apply();
+        Clean();
+    }
+    
+    public void Kuwahara(int type)
+    {
+        Image a = images[0];
+     
+        var texA = a.sprite.texture;
+        texture = new Texture2D(texA.width, texA.height);
+
+        int start = 2;
+     
+        for (int column = start; column < texture.width; column++)
+        {
+            for (int row = start; row < texture.height; row++)
+            {
+                float average = 0.0f;
+                float sum = 0.0f;
+                float va
+                     
+                for (int averageRow = 0; averageRow >= -start; averageRow--)
+                {
+                    for (int averageCol = 0; averageCol >= -start; averageCol--)
+                    {
+                        average += texA.GetPixel(averageCol + column, averageRow + row)[0];
+                    }
+                }
+
+                average /= Mathf.Pow(type, 2);
+                
+                for (int averageRow = 0; averageRow >= -start; averageRow--)
+                {
+                    for (int averageCol = 0; averageCol >= -start; averageCol--)
+                    {
+                        sum += Mathf.Pow((texA.GetPixel(averageCol + column, averageRow + row)[0] - average), 2);
+                    }
+                }
+
+                average = 0.0f;
+
+                texture.SetPixel(column, row, new Color(maximum, maximum, maximum));
+            }
+        }
+     
         Apply();
         Clean();
     }
