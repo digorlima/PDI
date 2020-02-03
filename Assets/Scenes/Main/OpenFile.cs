@@ -26,29 +26,19 @@ public class OpenFile : MonoBehaviour {
             tex = readPgm(path);
         } else {
             var fileContent = File.ReadAllBytes(path);
-
             tex = new Texture2D(0, 0);
             tex.LoadImage(fileContent);
         }
 
         tex.Apply();
 
-        float big;
-        if (tex.width > tex.height) {
-            big = tex.width;
-        } else {
-            big = tex.height;
-        }
-        float scale = ((RectTransform)content.transform).rect.width / big;
-
         GameObject newObject = Instantiate(imagePreset, content.transform, false);
+        
+        GameObject background = newObject.transform.GetChild(0).gameObject;
+        GameObject image = newObject.transform.GetChild(2).gameObject;
 
-        GameObject image = newObject.transform.GetChild(0).gameObject;
-
+        background.GetComponent<Image>().sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f));
         image.GetComponent<Image>().sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f));
-        ((RectTransform)newObject.transform).sizeDelta = new Vector2(tex.width * scale, tex.height * scale);
-        newObject.transform.localScale = new Vector3(1, 1);
-
         image.GetComponent<Toggle>().interactable = effect.GetState();
         image.GetComponent<UIToggle>().OnClick.OnToggleOn.Event.AddListener(delegate { ValueChanged(image.GetComponent<Image>()); });
     }
