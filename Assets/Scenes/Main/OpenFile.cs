@@ -32,6 +32,15 @@ public class OpenFile : MonoBehaviour {
 
         tex.Apply();
 
+        SetTexture(tex);
+    }
+
+    void ValueChanged(Image image) {
+        effect.AddImage(image);
+    }
+
+    private void SetTexture(Texture2D tex)
+    {
         GameObject newObject = Instantiate(imagePreset, content.transform, false);
         
         GameObject background = newObject.transform.GetChild(0).gameObject;
@@ -42,11 +51,12 @@ public class OpenFile : MonoBehaviour {
         image.GetComponent<Toggle>().interactable = effect.GetState();
         image.GetComponent<UIToggle>().OnClick.OnToggleOn.Event.AddListener(delegate { ValueChanged(image.GetComponent<Image>()); });
     }
-
-    void ValueChanged(Image image) {
-        effect.AddImage(image);
+    
+    public void SetTexture(Image image)
+    {
+        SetTexture(image.sprite.texture);
     }
-
+    
     Texture2D readPgm(string path) {
         string text = System.IO.File.ReadAllText(path);
 

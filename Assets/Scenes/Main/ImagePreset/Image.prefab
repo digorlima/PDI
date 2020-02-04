@@ -63,7 +63,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: 0898a4e4194ce9643979c844fc25c2e8, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -371,7 +371,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: 0898a4e4194ce9643979c844fc25c2e8, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -1614,14 +1614,15 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4271317509444185758}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c5de3ef0b5a665d4fb23900d85bcaa37, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   allImages: {fileID: 0}
   imagePlaceHolder: {fileID: 0}
-  borderDetection: {fileID: 0}
+  borderSlider: {fileID: 0}
+  kuwaharaInput: {fileID: 0}
 --- !u!1 &8023412337457346175
 GameObject:
   m_ObjectHideFlags: 0

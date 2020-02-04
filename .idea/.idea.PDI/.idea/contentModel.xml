@@ -762,7 +762,9 @@
         <e p="Scenes" t="Include">
           <e p="Main" t="Include">
             <e p="Blur" t="Include">
+              <e p="BlockedBlur.shader" t="Include" />
               <e p="Blur.shader" t="Include" />
+              <e p="MaskedBlur.shader" t="Include" />
             </e>
             <e p="Effect" t="Include">
               <e p="Arithmetic.cs" t="Include" />

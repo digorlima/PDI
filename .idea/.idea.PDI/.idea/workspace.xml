@@ -4,17 +4,8 @@
     <list default="true" id="0003da8b-7c1d-455e-963a-39079d70f8d0" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.PDI/.idea/contentModel.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.PDI/.idea/contentModel.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.PDI/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.PDI/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Doozy/Editor/Nody/Settings/NodyWindowSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Doozy/Editor/Nody/Settings/NodyWindowSettings.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Doozy/Engine/Resources/Data/UIButton/_UIButtonDatabase.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Doozy/Engine/Resources/Data/UIButton/_UIButtonDatabase.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Doozy/Engine/Resources/Data/UIView/_UIViewDatabase.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Doozy/Engine/Resources/Data/UIView/_UIViewDatabase.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Doozy/Engine/Resources/DoozySettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Doozy/Engine/Resources/DoozySettings.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Main/Effect/Effect.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Main/Effect/Effect.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Main/Graph.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Main/Graph.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Main/ImagePreset/Image.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Main/ImagePreset/Image.prefab" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Main/Main.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Main/Main.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Main/Blur/Blur.shader" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Main/Blur/Blur.shader" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scenes/Main/OpenFile.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Main/OpenFile.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Main/Product/Product Sans Bold Italic SDF.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Main/Product/Product Sans Bold Italic SDF.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Main/Product/Product Sans Italic SDF.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Main/Product/Product Sans Italic SDF.asset" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -26,14 +17,17 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/Assets/Doozy/Engine/Resources/Data/Soundy/_SoundyDatabase.asset" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scenes/Main/Effect/Arithmetic.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4CD14385-55E6-4C0E-AEDA-2393D3C9CF4A/85/6b2af049/SceneManager.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scenes/Main/Blur/BlockedBlur.shader" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scenes/Main/Blur/Blur.shader" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scenes/Main/OpenFile.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scenes/Main/Main.unity" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Doozy/Engine/Resources/Data/UIButton/_UIButtonDatabase.asset" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Doozy/Engine/Resources/Data/Soundy/_SoundyDatabase.asset" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scenes/Main/Effect/Arithmetic.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4CD14385-55E6-4C0E-AEDA-2393D3C9CF4A/dc/2b798580/Texture2D.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scenes/Main/Blur/MaskedBlur.shader" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scenes/Main/Effect/Effect.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4CD14385-55E6-4C0E-AEDA-2393D3C9CF4A/85/6b2af049/SceneManager.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Doozy/Engine/UI/Resources/UIAnimations/Hide/Basic.asset" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="IdeDocumentHistory">
@@ -43,8 +37,11 @@
         <option value="$PROJECT_DIR$/Assets/OpenFile.cs" />
         <option value="$PROJECT_DIR$/Assets/Scenes/Main/Effect/Arithmetic.cs" />
         <option value="$PROJECT_DIR$/Assets/Scenes/Main/Blur.shader" />
-        <option value="$PROJECT_DIR$/Assets/Scenes/Main/OpenFile.cs" />
         <option value="$PROJECT_DIR$/Assets/Scenes/Main/Effect/Effect.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scenes/Main/OpenFile.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scenes/Main/Blur/Blur.shader" />
+        <option value="$PROJECT_DIR$/Assets/Scenes/Main/Blur/SurfaceFormat.shader" />
+        <option value="$PROJECT_DIR$/Assets/Scenes/Main/Blur/BlockedBlur.shader" />
       </list>
     </option>
   </component>
@@ -114,7 +111,8 @@
       <workItem from="1580434437039" duration="1390000" />
       <workItem from="1580598510337" duration="21108000" />
       <workItem from="1580703607215" duration="746000" />
-      <workItem from="1580704447600" duration="16473000" />
+      <workItem from="1580704447600" duration="18367000" />
+      <workItem from="1580827614380" duration="2637000" />
     </task>
     <servers />
   </component>
