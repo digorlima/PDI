@@ -11,15 +11,16 @@ public class Effect : MonoBehaviour
 {
     public enum Effects
     {
-        ADD, SUB, MULT, DIV, AND, OR, XOR,      
-        PCOR,                                   
-        CONTRAST, NEGATIVE,                     
-        HORIZONTALFLIP, VERTICALFLIP, FLIPBOTH,  
-        BORDERDETECTION,                           
+        ADD, SUB, MULT, DIV, AND, OR, XOR,
+        PCOR,
+        CONTRAST, NEGATIVE,
+        HORIZONTALFLIP, VERTICALFLIP, FLIPBOTH,
+        BORDERDETECTION,
         AVERAGE3, AVERAGE5, MEDIAN3, MEDIAN5, MODE3, MODE5, MINIMUM3, MINIMUM5, MAXIMUM3, MAXIMUM5,
-        KUWAHARA, TOMITA, NAGAO, SOMBOONKAEW
+        KUWAHARA, TOMITA, NAGAO, SOMBOONKAEW,
+        M1, M2, M3, H1, H2
     }
-    
+
     [Header("Objetos do editor")]
     public GameObject allImages;
     public GameObject imagePlaceHolder;
@@ -27,7 +28,7 @@ public class Effect : MonoBehaviour
     [Header("Objetos para efeitos")]
     public Slider borderSlider;
     public TMP_InputField kuwaharaInput;
-    
+
     private int effect;
     private bool state = false;
     private bool buffer = false;
@@ -142,7 +143,7 @@ public class Effect : MonoBehaviour
             case (int)Effects.AVERAGE5:
                 Average(5);
                 break;
-            
+
             case (int)Effects.MEDIAN3:
                 Median(3);
                 break;
@@ -150,7 +151,7 @@ public class Effect : MonoBehaviour
             case (int)Effects.MEDIAN5:
                 Median(5);
                 break;
-            
+
             case (int)Effects.MODE3:
                 Mode(3);
                 break;
@@ -158,7 +159,7 @@ public class Effect : MonoBehaviour
             case (int)Effects.MODE5:
                 Mode(5);
                 break;
-            
+
             case (int)Effects.MINIMUM3:
                 Minimum(3);
                 break;
@@ -166,7 +167,7 @@ public class Effect : MonoBehaviour
             case (int)Effects.MINIMUM5:
                 Minimum(5);
                 break;
-            
+
             case (int)Effects.MAXIMUM3:
                 Maximum(3);
                 break;
@@ -174,21 +175,25 @@ public class Effect : MonoBehaviour
             case (int)Effects.MAXIMUM5:
                 Maximum(5);
                 break;
-            
+
             case (int)Effects.KUWAHARA:
                 Kuwahara(5);
                 break;
-            
+
             case (int)Effects.TOMITA:
                 Tomita(5);
                 break;
-            
+
             case (int)Effects.NAGAO:
                 Nagao(5);
                 break;
-            
+
             case (int)Effects.SOMBOONKAEW:
                 Somboonkaew(5);
+                break;
+
+            case (int)Effects.M1:
+                M1(3);
                 break;
         }
     }
@@ -420,7 +425,7 @@ public class Effect : MonoBehaviour
                     texture.SetPixel(column, row, new Color(value, value, value));
                 }
                 else
-                { 
+                {
                     float value = texture.GetPixel(column, row)[0];
                     texture.SetPixel(column, row, new Color(value, value, value));
                 }
@@ -466,7 +471,7 @@ public class Effect : MonoBehaviour
         Apply();
         Clean();
     }
-    
+
     public void Median(int type)
     {
         Image a = images[0];
@@ -503,7 +508,7 @@ public class Effect : MonoBehaviour
         Apply();
         Clean();
     }
-    
+
     public void Mode(int type)
     {
         Image a = images[0];
@@ -536,7 +541,8 @@ public class Effect : MonoBehaviour
                 float value = 0;
                 for (int i = 0; i < arr.Length; i++)
                 {
-                    if(arr[i] > maior){
+                    if (arr[i] > maior)
+                    {
                         maior = arr[i];
                         value = i;
                     }
@@ -544,7 +550,8 @@ public class Effect : MonoBehaviour
 
                 value /= 255;
 
-                if(maior == 1){
+                if (maior == 1)
+                {
                     value = sum / (type * type);
                 }
 
@@ -555,7 +562,7 @@ public class Effect : MonoBehaviour
         Apply();
         Clean();
     }
-    
+
     public void Minimum(int type)
     {
         Image a = images[0];
@@ -582,7 +589,7 @@ public class Effect : MonoBehaviour
                         }
                     }
                 }
-                
+
                 texture.SetPixel(column, row, new Color(minimum, minimum, minimum));
             }
         }
@@ -590,7 +597,7 @@ public class Effect : MonoBehaviour
         Apply();
         Clean();
     }
-    
+
     public void Maximum(int type)
     {
         Image a = images[0];
@@ -617,7 +624,7 @@ public class Effect : MonoBehaviour
                         }
                     }
                 }
-                
+
                 texture.SetPixel(column, row, new Color(maximum, maximum, maximum));
             }
         }
@@ -629,19 +636,19 @@ public class Effect : MonoBehaviour
     public void Kuwahara(int type)
     {
         Image a = images[0];
-     
+
         var texA = a.sprite.texture;
         texture = new Texture2D(texA.width, texA.height);
 
         int start;
-        
-        if(kuwaharaInput.text == "")
+
+        if (kuwaharaInput.text == "")
         {
-            start = (int) Math.Floor(type / 2.0f);
+            start = (int)Math.Floor(type / 2.0f);
         }
         else
         {
-            start = (int) Math.Floor(Convert.ToInt32(kuwaharaInput.text, 10) / 2.0f);
+            start = (int)Math.Floor(Convert.ToInt32(kuwaharaInput.text, 10) / 2.0f);
         }
 
         for (int column = start; column < texture.width; column++)
@@ -653,7 +660,7 @@ public class Effect : MonoBehaviour
                 float sum = 0.0f;
                 List<float> averages = new List<float>();
                 List<float> variances = new List<float>();
-                
+
                 // -----------------------------------------------------------------------------------------------------------
 
                 for (int averageRow = 0; averageRow >= -start; averageRow--)
@@ -666,7 +673,7 @@ public class Effect : MonoBehaviour
 
                 average /= quantity;
                 averages.Add(average);
-                
+
                 for (int averageRow = 0; averageRow >= -start; averageRow--)
                 {
                     for (int averageCol = 0; averageCol >= -start; averageCol--)
@@ -679,9 +686,9 @@ public class Effect : MonoBehaviour
 
                 variances.Add(Mathf.Sqrt((1.0f / quantity) * sum));
                 sum = 0.0f;
-                
+
                 // ----------------------------------------------------------------------------------------------------------
-                
+
                 for (int averageRow = 0; averageRow <= start; averageRow++)
                 {
                     for (int averageCol = 0; averageCol >= -start; averageCol--)
@@ -692,7 +699,7 @@ public class Effect : MonoBehaviour
 
                 average /= quantity;
                 averages.Add(average);
-                
+
                 for (int averageRow = 0; averageRow <= start; averageRow++)
                 {
                     for (int averageCol = 0; averageCol >= -start; averageCol--)
@@ -702,12 +709,12 @@ public class Effect : MonoBehaviour
                 }
 
                 average = 0.0f;
-                
+
                 variances.Add(Mathf.Sqrt((1.0f / quantity) * sum));
                 sum = 0.0f;
-                
+
                 // ----------------------------------------------------------------------------------------------------------
-                
+
                 for (int averageRow = 0; averageRow >= -start; averageRow--)
                 {
                     for (int averageCol = 0; averageCol <= start; averageCol++)
@@ -718,7 +725,7 @@ public class Effect : MonoBehaviour
 
                 average /= quantity;
                 averages.Add(average);
-                
+
                 for (int averageRow = 0; averageRow >= -start; averageRow--)
                 {
                     for (int averageCol = 0; averageCol <= start; averageCol++)
@@ -731,9 +738,9 @@ public class Effect : MonoBehaviour
 
                 variances.Add(Mathf.Sqrt((1.0f / quantity) * sum));
                 sum = 0.0f;
-                
+
                 // ----------------------------------------------------------------------------------------------------------
-                
+
                 for (int averageRow = 0; averageRow <= start; averageRow++)
                 {
                     for (int averageCol = 0; averageCol <= start; averageCol++)
@@ -744,7 +751,7 @@ public class Effect : MonoBehaviour
 
                 average /= quantity;
                 averages.Add(average);
-                
+
                 for (int averageRow = 0; averageRow <= start; averageRow++)
                 {
                     for (int averageCol = 0; averageCol <= start; averageCol++)
@@ -754,12 +761,12 @@ public class Effect : MonoBehaviour
                 }
 
                 variances.Add(Mathf.Sqrt((1.0f / quantity) * sum));
-                
+
                 // ----------------------------------------------------------------------------------------------------------
 
                 float m = variances[0];
                 int j = 0;
-                
+
                 for (int i = 1; i < variances.Count; i++)
                 {
                     if (m > variances[i])
@@ -774,26 +781,26 @@ public class Effect : MonoBehaviour
         }
 
         forceDo = false;
-        
+
         Apply();
     }
-    
+
     public void Tomita(int type)
     {
         Image a = images[0];
-     
+
         var texA = a.sprite.texture;
         texture = new Texture2D(texA.width, texA.height);
 
         int start;
-        
-        if(kuwaharaInput.text == "")
+
+        if (kuwaharaInput.text == "")
         {
-            start = (int) Math.Floor(type / 2.0f);
+            start = (int)Math.Floor(type / 2.0f);
         }
         else
         {
-            start = (int) Math.Floor(Convert.ToInt32(kuwaharaInput.text, 10) / 2.0f);
+            start = (int)Math.Floor(Convert.ToInt32(kuwaharaInput.text, 10) / 2.0f);
         }
 
         for (int column = start; column < texture.width; column++)
@@ -805,7 +812,7 @@ public class Effect : MonoBehaviour
                 float sum = 0.0f;
                 List<float> averages = new List<float>();
                 List<float> variances = new List<float>();
-                
+
                 // -----------------------------------------------------------------------------------------------------------
 
                 for (int averageRow = 0; averageRow >= -start; averageRow--)
@@ -818,7 +825,7 @@ public class Effect : MonoBehaviour
 
                 average /= quantity;
                 averages.Add(average);
-                
+
                 for (int averageRow = 0; averageRow >= -start; averageRow--)
                 {
                     for (int averageCol = 0; averageCol >= -start; averageCol--)
@@ -830,9 +837,9 @@ public class Effect : MonoBehaviour
                 average = 0.0f;
                 variances.Add(Mathf.Sqrt((1.0f / quantity) * sum));
                 sum = 0.0f;
-                
+
                 // ----------------------------------------------------------------------------------------------------------
-                
+
                 for (int averageRow = 0; averageRow <= start; averageRow++)
                 {
                     for (int averageCol = 0; averageCol >= -start; averageCol--)
@@ -843,7 +850,7 @@ public class Effect : MonoBehaviour
 
                 average /= quantity;
                 averages.Add(average);
-                
+
                 for (int averageRow = 0; averageRow <= start; averageRow++)
                 {
                     for (int averageCol = 0; averageCol >= -start; averageCol--)
@@ -855,9 +862,9 @@ public class Effect : MonoBehaviour
                 average = 0.0f;
                 variances.Add(Mathf.Sqrt((1.0f / quantity) * sum));
                 sum = 0.0f;
-                
+
                 // ----------------------------------------------------------------------------------------------------------
-                
+
                 for (int averageRow = 0; averageRow >= -start; averageRow--)
                 {
                     for (int averageCol = 0; averageCol <= start; averageCol++)
@@ -868,7 +875,7 @@ public class Effect : MonoBehaviour
 
                 average /= quantity;
                 averages.Add(average);
-                
+
                 for (int averageRow = 0; averageRow >= -start; averageRow--)
                 {
                     for (int averageCol = 0; averageCol <= start; averageCol++)
@@ -880,9 +887,9 @@ public class Effect : MonoBehaviour
                 average = 0.0f;
                 variances.Add(Mathf.Sqrt((1.0f / quantity) * sum));
                 sum = 0.0f;
-                
+
                 // ----------------------------------------------------------------------------------------------------------
-                
+
                 for (int averageRow = 0; averageRow <= start; averageRow++)
                 {
                     for (int averageCol = 0; averageCol <= start; averageCol++)
@@ -893,7 +900,7 @@ public class Effect : MonoBehaviour
 
                 average /= quantity;
                 averages.Add(average);
-                
+
                 for (int averageRow = 0; averageRow <= start; averageRow++)
                 {
                     for (int averageCol = 0; averageCol <= start; averageCol++)
@@ -906,7 +913,7 @@ public class Effect : MonoBehaviour
                 variances.Add(Mathf.Sqrt((1.0f / quantity) * sum));
                 sum = 0.0f;
                 // ----------------------------------------------------------------------------------------------------------
-                
+
                 for (int averageRow = -start + 1; averageRow <= start - 1; averageRow++)
                 {
                     for (int averageCol = -start + 1; averageCol <= start - 1; averageCol++)
@@ -917,7 +924,7 @@ public class Effect : MonoBehaviour
 
                 average /= quantity;
                 averages.Add(average);
-                
+
                 for (int averageRow = -start + 1; averageRow <= start - 1; averageRow++)
                 {
                     for (int averageCol = -start + 1; averageCol <= start - 1; averageCol++)
@@ -929,12 +936,12 @@ public class Effect : MonoBehaviour
                 average = 0.0f;
                 variances.Add(Mathf.Sqrt((1.0f / quantity) * sum));
                 sum = 0.0f;
-                
+
                 // ----------------------------------------------------------------------------------------------------------
 
                 float m = variances[0];
                 int j = 0;
-                
+
                 for (int i = 1; i < variances.Count; i++)
                 {
                     if (m > variances[i])
@@ -949,26 +956,26 @@ public class Effect : MonoBehaviour
         }
 
         forceDo = false;
-        
+
         Apply();
     }
-    
+
     public void Nagao(int type)
     {
         Image a = images[0];
-     
+
         var texA = a.sprite.texture;
         texture = new Texture2D(texA.width, texA.height);
 
         int start;
-        
-        if(kuwaharaInput.text == "")
+
+        if (kuwaharaInput.text == "")
         {
-            start = (int) Math.Floor(type / 2.0f);
+            start = (int)Math.Floor(type / 2.0f);
         }
         else
         {
-            start = (int) Math.Floor(Convert.ToInt32(kuwaharaInput.text, 10) / 2.0f);
+            start = (int)Math.Floor(Convert.ToInt32(kuwaharaInput.text, 10) / 2.0f);
         }
 
         for (int column = start; column < texture.width; column++)
@@ -981,7 +988,7 @@ public class Effect : MonoBehaviour
                 List<float> averages = new List<float>();
                 List<float> variances = new List<float>();
                 float counter = 1;
-                
+
                 // -----------------------------------------------------------------------------------------------------------
 
                 for (int averageRow = -start + 1; averageRow <= start - 1; averageRow++)
@@ -995,7 +1002,7 @@ public class Effect : MonoBehaviour
 
                 average /= counter;
                 averages.Add(average);
-                
+
                 for (int averageRow = -start + 1; averageRow <= start - 1; averageRow++)
                 {
                     for (int averageCol = -start + 1; averageCol <= start - 1; averageCol++)
@@ -1008,7 +1015,7 @@ public class Effect : MonoBehaviour
                 variances.Add(Mathf.Sqrt((1.0f / counter) * sum));
                 sum = 0.0f;
                 counter = 1;
-                
+
                 // ----------------------------------------------------------------------------------------------------------
 
                 for (int averageRow = -1; averageRow >= -start; averageRow--)
@@ -1022,7 +1029,7 @@ public class Effect : MonoBehaviour
 
                 average /= counter;
                 averages.Add(average);
-                
+
                 for (int averageRow = -1; averageRow >= -start; averageRow--)
                 {
                     for (int averageCol = -start + 1; averageCol <= start - 1; averageCol++)
@@ -1035,7 +1042,7 @@ public class Effect : MonoBehaviour
                 variances.Add(Mathf.Sqrt((1.0f / counter) * sum));
                 sum = 0.0f;
                 counter = 1;
-                
+
                 // ----------------------------------------------------------------------------------------------------------
 
                 for (int averageRow = -start + 1; averageRow <= start - 1; averageRow++)
@@ -1049,7 +1056,7 @@ public class Effect : MonoBehaviour
 
                 average /= counter;
                 averages.Add(average);
-                
+
                 for (int averageRow = -start + 1; averageRow <= start - 1; averageRow++)
                 {
                     for (int averageCol = 1; averageCol <= start; averageCol++)
@@ -1062,7 +1069,7 @@ public class Effect : MonoBehaviour
                 variances.Add(Mathf.Sqrt((1.0f / counter) * sum));
                 sum = 0.0f;
                 counter = 1;
-                
+
                 // ----------------------------------------------------------------------------------------------------------
 
                 for (int averageRow = 1; averageRow <= start; averageRow++)
@@ -1076,7 +1083,7 @@ public class Effect : MonoBehaviour
 
                 average /= counter;
                 averages.Add(average);
-                
+
                 for (int averageRow = 1; averageRow <= start; averageRow++)
                 {
                     for (int averageCol = -start + 1; averageCol <= start - 1; averageCol++)
@@ -1089,7 +1096,7 @@ public class Effect : MonoBehaviour
                 variances.Add(Mathf.Sqrt((1.0f / counter) * sum));
                 sum = 0.0f;
                 counter = 1;
-                
+
                 // ----------------------------------------------------------------------------------------------------------
 
                 for (int averageRow = -start + 1; averageRow <= start - 1; averageRow++)
@@ -1103,7 +1110,7 @@ public class Effect : MonoBehaviour
 
                 average /= counter;
                 averages.Add(average);
-                
+
                 for (int averageRow = -start + 1; averageRow <= start - 1; averageRow++)
                 {
                     for (int averageCol = -1; averageCol >= -start; averageCol--)
@@ -1116,7 +1123,7 @@ public class Effect : MonoBehaviour
                 variances.Add(Mathf.Sqrt((1.0f / counter) * sum));
                 sum = 0.0f;
                 counter = 0;
-                
+
                 // ----------------------------------------------------------------------------------------------------------
                 int rowFactor = 1;
                 int colFactor = 1;
@@ -1149,22 +1156,22 @@ public class Effect : MonoBehaviour
                     {
                         break;
                     }
-                    
+
                     for (int i = 1; i <= start; i++)
                     {
-                        average += texA.GetPixel(column - (colFactor * (i-1)), row - (rowFactor * i))[0];
-                        average += texA.GetPixel(column - (colFactor * i), row - (rowFactor * (i-1)))[0];
+                        average += texA.GetPixel(column - (colFactor * (i - 1)), row - (rowFactor * i))[0];
+                        average += texA.GetPixel(column - (colFactor * i), row - (rowFactor * (i - 1)))[0];
                         average += texA.GetPixel(column - (colFactor * i), row - (rowFactor * i))[0];
                         counter += 3;
                     }
-                    
+
                     average /= counter;
                     averages.Add(average);
-                    
+
                     for (int i = 1; i <= start; i++)
                     {
-                        sum += Mathf.Pow((texA.GetPixel(column - (colFactor * (i-1)), row - (rowFactor * i))[0] - average), 2);
-                        sum += Mathf.Pow((texA.GetPixel(column - (colFactor * i), row - (rowFactor * (i-1)))[0] - average), 2);
+                        sum += Mathf.Pow((texA.GetPixel(column - (colFactor * (i - 1)), row - (rowFactor * i))[0] - average), 2);
+                        sum += Mathf.Pow((texA.GetPixel(column - (colFactor * i), row - (rowFactor * (i - 1)))[0] - average), 2);
                         sum += Mathf.Pow((texA.GetPixel(column - (colFactor * i), row - (rowFactor * i))[0] - average), 2);
                     }
 
@@ -1172,7 +1179,7 @@ public class Effect : MonoBehaviour
                     variances.Add(Mathf.Sqrt((1.0f / counter) * sum));
                     sum = 0.0f;
                     counter = 1;
-                    
+
                     aux++;
                 }
 
@@ -1180,7 +1187,7 @@ public class Effect : MonoBehaviour
 
                 float m = variances[0];
                 int j = 0;
-                
+
                 for (int i = 1; i < variances.Count; i++)
                 {
                     if (m > variances[i])
@@ -1195,27 +1202,145 @@ public class Effect : MonoBehaviour
         }
 
         forceDo = false;
-        
+
         Apply();
     }
 
     public void Somboonkaew(int type)
     {
-        
+
     }
 
-    // Gets and Sets ------------------------------------------
-    public bool GetState() { return state; }
-    public void SetState(bool state) { this.state = state; }
+    public void M1(int type)
+    {
+        Image a = images[0];
 
-    public int GetSize() { return size; }
-    public void SetSize(int size) { this.size = size; }
+        var texA = a.sprite.texture;
+        texture = new Texture2D(texA.width, texA.height);
 
-    public int GetEffect() { return effect; }
-    public void SetEffect(int effect) { this.effect = effect; }
-    
-    public bool GetForceDo() { return forceDo; }    
-    public void SetForceDo(bool forceDo) { this.forceDo = forceDo; }        
+        int start;
+
+        if (kuwaharaInput.text == "")
+        {
+            start = (int)Math.Floor(type / 2.0f);
+        }
+        else
+        {
+            start = (int)Math.Floor(Convert.ToInt32(kuwaharaInput.text, 10) / 2.0f);
+        }
+
+        for (int column = start; column < texture.width; column++)
+        {
+            for (int row = start; row < texture.height; row++)
+            {
+                float[] sum = new float[3];
+
+                for (int channel = 0; channel < 3; channel++)
+                {
+                    float[] mat = new float[type * type];
+
+                    int w = 0;
+                    for(int i = -start; i <= start; i++)
+                    {
+                        for(int j = -start; j <= start; j++)
+                        {
+                            mat[w] = texA.GetPixel(column + i, row + j)[channel];
+                            w++;
+                        }
+                    }
+
+                    float x = mat[(int)Math.Floor(mat.Count() / 2.0f)];
+                    float y = 0;
+
+                    for(int i = 0; i < mat.Count(); i++)
+                    {
+                        y += mat[i];
+                    }
+
+                    y -= x;
+
+                    sum[channel] = (x * ((type*type) - 1)) - y;
+                }
+
+                texture.SetPixel(column, row, new Color(sum[0], sum[1], sum[2]));
+            }
+        }
+
+        Apply();
+        forceDo = false;
+    }
+
+    public void H1(int type)
+    {
+        Image a = images[0];
+
+        var texA = a.sprite.texture;
+        texture = new Texture2D(texA.width, texA.height);
+
+        int start;
+
+        if (kuwaharaInput.text == "")
+        {
+            start = (int)Math.Floor(type / 2.0f);
+        }
+        else
+        {
+            start = (int)Math.Floor(Convert.ToInt32(kuwaharaInput.text, 10) / 2.0f);
+        }
+
+        for (int column = start; column < texture.width; column++)
+        {
+            for (int row = start; row < texture.height; row++)
+            {
+                float[] sum = new float[3];
+
+                for (int channel = 0; channel < 3; channel++)
+                {
+                    float[] mat = new float[type * type];
+
+                    int w = 0;
+                    for(int i = -start; i <= start; i++)
+                    {
+                        for(int j = -start; j <= start; j++)
+                        {
+                            mat[w] = texA.GetPixel(column + i, row + j)[channel];
+                            w++;
+                        }
+                    }
+
+                    float x = mat[(int)Math.Floor(mat.Count() / 2.0f)];
+                    float y = 0;
+
+                    for(int i = 0; i < mat.Count(); i++)
+                    {
+                        y += mat[i];
+                    }
+
+                    y -= x;
+
+                    sum[channel] = (x * (type*type)) - y;
+                }
+
+                texture.SetPixel(column, row, new Color(sum[0], sum[1], sum[2]));
+            }
+        }
+
+        Apply();
+        forceDo = false;
+    }
+
+// Gets and Sets ------------------------------------------
+public bool GetState() { return state; }
+public void SetState(bool state) { this.state = state; }
+
+public int GetSize() { return size; }
+public void SetSize(int size) { this.size = size; }
+
+public int GetEffect() { return effect; }
+public void SetEffect(int effect) { this.effect = effect; }
+
+public bool GetForceDo() { return forceDo; }
+public void SetForceDo(bool forceDo) { this.forceDo = forceDo; }        
     // --------------------------------------------------------
 
     // -------------------------------------------------------------------
