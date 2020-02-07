@@ -89,13 +89,13 @@ MonoBehaviour:
   m_onEnterShowViews:
   - Category: Program
     InstantAction: 0
-    Name: Kuwahara
+    Name: Matrizes
   m_onEnterHideViews: []
   m_onExitShowViews: []
   m_onExitHideViews:
   - Category: Program
     InstantAction: 0
-    Name: Kuwahara
+    Name: Matrizes
 --- !u!114 &-7403173715313712100
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -244,7 +244,7 @@ MonoBehaviour:
   m_useUpdate: 0
   m_height: 80
   m_width: 120
-  m_x: 36
+  m_x: 12
   m_y: 0
   m_minimumInputSocketsCount: 1
   m_minimumOutputSocketsCount: 1
@@ -358,7 +358,7 @@ MonoBehaviour:
     m_id: e1702883-d3f8-4e74-91b3-16c68b45ddeb
     m_nodeId: baaf006f-3ffe-41c7-b3c8-0d1a6b5d5367
     m_socketName: OutputSocket_0
-    m_value: '{"ButtonCategory":"Program","ButtonName":"Kuwahara","GameEvent":"","TimeDelay":3.0,"Trigger":0}'
+    m_value: '{"ButtonCategory":"Program","ButtonName":"Matrizes","GameEvent":"","TimeDelay":3.0,"Trigger":0}'
     m_valueTypeQualifiedName: Doozy.Engine.UI.Connections.UIConnection, Assembly-CSharp,
       Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
   m_nodeType: 4

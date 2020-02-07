@@ -16,7 +16,7 @@ public class Effect : MonoBehaviour
         CONTRAST, NEGATIVE,
         HORIZONTALFLIP, VERTICALFLIP, FLIPBOTH,
         BORDERDETECTION,
-        AVERAGE3, AVERAGE5, MEDIAN3, MEDIAN5, MODE3, MODE5, MINIMUM3, MINIMUM5, MAXIMUM3, MAXIMUM5,
+        AVERAGE, MEDIAN, MODE, MINIMUM, MAXIMUM,
         KUWAHARA, TOMITA, NAGAO, SOMBOONKAEW,
         M1, M2, M3, H1, H2
     }
@@ -27,7 +27,7 @@ public class Effect : MonoBehaviour
 
     [Header("Objetos para efeitos")]
     public Slider borderSlider;
-    public TMP_InputField kuwaharaInput;
+    public TMP_InputField matInput;
 
     private int effect;
     private bool state = false;
@@ -81,31 +81,31 @@ public class Effect : MonoBehaviour
         switch (effect)
         {
             case (int)Effects.ADD:
-                texture = Arithmetic.Add(images[0], images[1]);
+                Add();
                 break;
 
             case (int)Effects.SUB:
-                texture = Arithmetic.Sub(images[0], images[1]);
+                Sub();
                 break;
 
             case (int)Effects.MULT:
-                texture = Arithmetic.Mult(images[0], images[1]);
+                Mult();
                 break;
 
             case (int)Effects.DIV:
-                texture = Arithmetic.Div(images[0], images[1]);
+                Div();
                 break;
 
             case (int)Effects.AND:
-                texture = Arithmetic.And(images[0], images[1]);
+                And();
                 break;
 
             case (int)Effects.OR:
-                texture = Arithmetic.Or(images[0], images[1]);
+                Or();
                 break;
 
             case (int)Effects.XOR:
-                texture = Arithmetic.Xor(images[0], images[1]);
+                Xor();
                 break;
 
             case (int)Effects.PCOR:
@@ -136,66 +136,64 @@ public class Effect : MonoBehaviour
                 BorderDetection();
                 break;
 
-            case (int)Effects.AVERAGE3:
-                Average(3);
+            case (int)Effects.AVERAGE:
+                Average(GetMat(3));
                 break;
 
-            case (int)Effects.AVERAGE5:
-                Average(5);
+            case (int)Effects.MEDIAN:
+                Median(GetMat(3));
                 break;
 
-            case (int)Effects.MEDIAN3:
-                Median(3);
+            case (int)Effects.MODE:
+                Mode(GetMat(3));
                 break;
 
-            case (int)Effects.MEDIAN5:
-                Median(5);
+            case (int)Effects.MINIMUM:
+                Minimum(GetMat(3));
                 break;
 
-            case (int)Effects.MODE3:
-                Mode(3);
-                break;
-
-            case (int)Effects.MODE5:
-                Mode(5);
-                break;
-
-            case (int)Effects.MINIMUM3:
-                Minimum(3);
-                break;
-
-            case (int)Effects.MINIMUM5:
-                Minimum(5);
-                break;
-
-            case (int)Effects.MAXIMUM3:
-                Maximum(3);
-                break;
-
-            case (int)Effects.MAXIMUM5:
-                Maximum(5);
+            case (int)Effects.MAXIMUM:
+                Maximum(GetMat(3));
                 break;
 
             case (int)Effects.KUWAHARA:
-                Kuwahara(5);
+                Kuwahara(GetMat(5));
                 break;
 
             case (int)Effects.TOMITA:
-                Tomita(5);
+                Tomita(GetMat(5));
                 break;
 
             case (int)Effects.NAGAO:
-                Nagao(5);
+                Nagao(GetMat(5));
                 break;
 
             case (int)Effects.SOMBOONKAEW:
-                Somboonkaew(5);
+                Somboonkaew(GetMat(5));
                 break;
 
             case (int)Effects.M1:
-                M1(3);
+                M1(GetMat(3));
+                break;
+
+            case (int)Effects.M2:
+                M2(GetMat(3));
+                break;
+
+            case (int)Effects.M3:
+                M3(GetMat(3));
+                break;
+
+            case (int)Effects.H1:
+                H1(GetMat(3));
+                break;
+
+            case (int)Effects.H2:
+                H2(GetMat(3));
                 break;
         }
+
+        Apply();
     }
 
     public void Clean()
@@ -203,6 +201,10 @@ public class Effect : MonoBehaviour
         SetSize(-1);
         images.Clear();
         forceDo = true;
+
+        if(matInput.gameObject.active){
+            matInput.text = "";
+        }
     }
 
     public void Apply()
@@ -211,6 +213,260 @@ public class Effect : MonoBehaviour
 
         m_image1.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100.0f);
         imagePlaceHolder.SetActive(true);
+    }
+
+    public int GetMat(int standard)
+    {
+        if (matInput.text == "")
+        {
+            matInput.text = standard + "";
+            return standard;
+        }
+        else
+        {
+            int value = Convert.ToInt32(matInput.text, 10);
+
+            if (value % 2 == 0)
+            {
+                value--;
+                matInput.text = value + "";
+            }
+            else if (value < 0){
+                value = standard;
+                matInput.text = value + "";
+            }
+
+            return value;
+        }
+    }
+
+    public void Add()
+    {
+        Image a = images[0];
+        Image b = images[1];
+
+        var texA = a.sprite.texture;
+        var texB = b.sprite.texture;
+
+        texture = new Texture2D(texA.width, texA.height);
+
+        for (int row = 0; row < texA.width; row++)
+        {
+            for (int column = 0; column < texA.height; column++)
+            {
+                float[] sum = new float[3];
+
+                for (int channel = 0; channel < 3; channel++)
+                {
+                    int pixelA = (int)(texA.GetPixel(row, column)[channel] * 255);
+                    int pixelB = (int)(texB.GetPixel(row, column)[channel] * 255);
+                    int pixel = pixelA + pixelB;
+
+                    sum[channel] = pixel / 255.0f;
+                }
+
+                texture.SetPixel(row, column, new Color(sum[0], sum[1], sum[2]));
+            }
+        }
+
+        Clean();
+    }
+
+    public void Sub()
+    {
+        Image a = images[0];
+        Image b = images[1];
+
+        var texA = a.sprite.texture;
+        var texB = b.sprite.texture;
+
+        texture = new Texture2D(texA.width, texA.height);
+
+        for (int row = 0; row < texA.width; row++)
+        {
+            for (int column = 0; column < texA.height; column++)
+            {
+                float[] sum = new float[3];
+
+                for (int channel = 0; channel < 3; channel++)
+                {
+                    int pixelA = (int)(texA.GetPixel(row, column)[channel] * 255);
+                    int pixelB = (int)(texB.GetPixel(row, column)[channel] * 255);
+                    int pixel = pixelA - pixelB;
+
+                    sum[channel] = pixel / 255.0f;
+                }
+
+                texture.SetPixel(row, column, new Color(sum[0], sum[1], sum[2]));
+            }
+        }
+
+        Clean();
+    }
+
+    public void Mult()
+    {
+        Image a = images[0];
+        Image b = images[1];
+
+        var texA = a.sprite.texture;
+        var texB = b.sprite.texture;
+
+        texture = new Texture2D(texA.width, texA.height);
+
+        for (int row = 0; row < texA.width; row++)
+        {
+            for (int column = 0; column < texA.height; column++)
+            {
+                float[] sum = new float[3];
+
+                for (int channel = 0; channel < 3; channel++)
+                {
+                    int pixelA = (int)(texA.GetPixel(row, column)[channel] * 255);
+                    int pixelB = (int)(texB.GetPixel(row, column)[channel] * 255);
+                    int pixel = pixelA * pixelB;
+
+                    sum[channel] = pixel / 255.0f;
+                }
+
+                texture.SetPixel(row, column, new Color(sum[0], sum[1], sum[2]));
+            }
+        }
+
+        Clean();
+    }
+
+    public void Div()
+    {
+        Image a = images[0];
+        Image b = images[1];
+
+        var texA = a.sprite.texture;
+        var texB = b.sprite.texture;
+
+        texture = new Texture2D(texA.width, texA.height);
+
+        for (int row = 0; row < texA.width; row++)
+        {
+            for (int column = 0; column < texA.height; column++)
+            {
+                float[] sum = new float[3];
+
+                for (int channel = 0; channel < 3; channel++)
+                {
+                    int pixelA = (int)(texA.GetPixel(row, column)[channel] * 255);
+                    int pixelB = (int)(texB.GetPixel(row, column)[channel] * 255);
+                    int pixel = 0;
+
+                    if (pixelB != 0)
+                    {
+                        pixel = pixelA / pixelB;
+                    }
+
+                    sum[channel] = pixel / 255.0f;
+                }
+
+                texture.SetPixel(row, column, new Color(sum[0], sum[1], sum[2]));
+            }
+        }
+
+        Clean();
+    }
+
+    public void And()
+    {
+        Image a = images[0];
+        Image b = images[1];
+
+        var texA = a.sprite.texture;
+        var texB = b.sprite.texture;
+
+        texture = new Texture2D(texA.width, texA.height);
+
+        for (int row = 0; row < texA.width; row++)
+        {
+            for (int column = 0; column < texA.height; column++)
+            {
+                float[] sum = new float[3];
+
+                for (int channel = 0; channel < 3; channel++)
+                {
+                    int pixelA = (int)(texA.GetPixel(row, column)[channel] * 255);
+                    int pixelB = (int)(texB.GetPixel(row, column)[channel] * 255);
+                    int pixel = pixelA & pixelB;
+
+                    sum[channel] = pixel / 255.0f;
+                }
+
+                texture.SetPixel(row, column, new Color(sum[0], sum[1], sum[2]));
+            }
+        }
+
+        Clean();
+    }
+
+    public void Or()
+    {
+        Image a = images[0];
+        Image b = images[1];
+
+        var texA = a.sprite.texture;
+        var texB = b.sprite.texture;
+
+        texture = new Texture2D(texA.width, texA.height);
+
+        for (int row = 0; row < texA.width; row++)
+        {
+            for (int column = 0; column < texA.height; column++)
+            {
+                float[] sum = new float[3];
+
+                for (int channel = 0; channel < 3; channel++)
+                {
+                    int pixelA = (int)(texA.GetPixel(row, column)[channel] * 255);
+                    int pixelB = (int)(texB.GetPixel(row, column)[channel] * 255);
+                    int pixel = pixelA | pixelB;
+
+                    sum[channel] = pixel / 255.0f;
+                }
+
+                texture.SetPixel(row, column, new Color(sum[0], sum[1], sum[2]));
+            }
+        }
+
+        Clean();
+    }
+
+    public void Xor()
+    {
+        Image a = images[0];
+        Image b = images[1];
+
+        var texA = a.sprite.texture;
+        var texB = b.sprite.texture;
+
+        texture = new Texture2D(texA.width, texA.height);
+
+        for (int row = 0; row < texA.width; row++)
+        {
+            for (int column = 0; column < texA.height; column++)
+            {
+                float[] sum = new float[3];
+
+                for (int channel = 0; channel < 3; channel++)
+                {
+                    int pixelA = (int)(texA.GetPixel(row, column)[channel] * 255);
+                    int pixelB = (int)(texB.GetPixel(row, column)[channel] * 255);
+                    int pixel = pixelA ^ pixelB;
+
+                    sum[channel] = pixel / 255.0f;
+                }
+
+                texture.SetPixel(row, column, new Color(sum[0], sum[1], sum[2]));
+            }
+        }
+
+        Clean();
     }
 
     public void PCor()
@@ -264,7 +520,6 @@ public class Effect : MonoBehaviour
             }
         }
 
-        Apply();
         Clean();
     }
 
@@ -305,7 +560,6 @@ public class Effect : MonoBehaviour
             }
         }
 
-        Apply();
         Clean();
     }
 
@@ -326,7 +580,6 @@ public class Effect : MonoBehaviour
             }
         }
 
-        Apply();
         Clean();
     }
 
@@ -377,7 +630,6 @@ public class Effect : MonoBehaviour
                 break;
         }
 
-        Apply();
         Clean();
     }
 
@@ -434,7 +686,7 @@ public class Effect : MonoBehaviour
             }
         }
 
-        Apply();
+        forceDo = false;
     }
 
     public void Average(int type)
@@ -468,8 +720,7 @@ public class Effect : MonoBehaviour
             }
         }
 
-        Apply();
-        Clean();
+        forceDo = false;
     }
 
     public void Median(int type)
@@ -505,8 +756,7 @@ public class Effect : MonoBehaviour
             }
         }
 
-        Apply();
-        Clean();
+        forceDo = false;
     }
 
     public void Mode(int type)
@@ -559,8 +809,7 @@ public class Effect : MonoBehaviour
             }
         }
 
-        Apply();
-        Clean();
+        forceDo = false;
     }
 
     public void Minimum(int type)
@@ -594,8 +843,7 @@ public class Effect : MonoBehaviour
             }
         }
 
-        Apply();
-        Clean();
+        forceDo = false;
     }
 
     public void Maximum(int type)
@@ -629,8 +877,7 @@ public class Effect : MonoBehaviour
             }
         }
 
-        Apply();
-        Clean();
+        forceDo = false;
     }
 
     public void Kuwahara(int type)
@@ -642,14 +889,7 @@ public class Effect : MonoBehaviour
 
         int start;
 
-        if (kuwaharaInput.text == "")
-        {
-            start = (int)Math.Floor(type / 2.0f);
-        }
-        else
-        {
-            start = (int)Math.Floor(Convert.ToInt32(kuwaharaInput.text, 10) / 2.0f);
-        }
+        start = (int)Math.Floor(type / 2.0f);
 
         for (int column = start; column < texture.width; column++)
         {
@@ -781,8 +1021,6 @@ public class Effect : MonoBehaviour
         }
 
         forceDo = false;
-
-        Apply();
     }
 
     public void Tomita(int type)
@@ -794,14 +1032,7 @@ public class Effect : MonoBehaviour
 
         int start;
 
-        if (kuwaharaInput.text == "")
-        {
-            start = (int)Math.Floor(type / 2.0f);
-        }
-        else
-        {
-            start = (int)Math.Floor(Convert.ToInt32(kuwaharaInput.text, 10) / 2.0f);
-        }
+        start = (int)Math.Floor(type / 2.0f);
 
         for (int column = start; column < texture.width; column++)
         {
@@ -956,8 +1187,6 @@ public class Effect : MonoBehaviour
         }
 
         forceDo = false;
-
-        Apply();
     }
 
     public void Nagao(int type)
@@ -969,14 +1198,7 @@ public class Effect : MonoBehaviour
 
         int start;
 
-        if (kuwaharaInput.text == "")
-        {
-            start = (int)Math.Floor(type / 2.0f);
-        }
-        else
-        {
-            start = (int)Math.Floor(Convert.ToInt32(kuwaharaInput.text, 10) / 2.0f);
-        }
+        start = (int)Math.Floor(type / 2.0f);
 
         for (int column = start; column < texture.width; column++)
         {
@@ -1202,8 +1424,6 @@ public class Effect : MonoBehaviour
         }
 
         forceDo = false;
-
-        Apply();
     }
 
     public void Somboonkaew(int type)
@@ -1220,14 +1440,7 @@ public class Effect : MonoBehaviour
 
         int start;
 
-        if (kuwaharaInput.text == "")
-        {
-            start = (int)Math.Floor(type / 2.0f);
-        }
-        else
-        {
-            start = (int)Math.Floor(Convert.ToInt32(kuwaharaInput.text, 10) / 2.0f);
-        }
+        start = (int)Math.Floor(type / 2.0f);
 
         for (int column = start; column < texture.width; column++)
         {
@@ -1240,9 +1453,9 @@ public class Effect : MonoBehaviour
                     float[] mat = new float[type * type];
 
                     int w = 0;
-                    for(int i = -start; i <= start; i++)
+                    for (int i = -start; i <= start; i++)
                     {
-                        for(int j = -start; j <= start; j++)
+                        for (int j = -start; j <= start; j++)
                         {
                             mat[w] = texA.GetPixel(column + i, row + j)[channel];
                             w++;
@@ -1252,21 +1465,129 @@ public class Effect : MonoBehaviour
                     float x = mat[(int)Math.Floor(mat.Count() / 2.0f)];
                     float y = 0;
 
-                    for(int i = 0; i < mat.Count(); i++)
+                    for (int i = 0; i < mat.Count(); i++)
                     {
                         y += mat[i];
                     }
 
                     y -= x;
 
-                    sum[channel] = (x * ((type*type) - 1)) - y;
+                    sum[channel] = (x * ((type * type))) - y;
                 }
 
                 texture.SetPixel(column, row, new Color(sum[0], sum[1], sum[2]));
             }
         }
 
-        Apply();
+        forceDo = false;
+    }
+
+    public void M2(int type)
+    {
+        Image a = images[0];
+
+        var texA = a.sprite.texture;
+        texture = new Texture2D(texA.width, texA.height);
+
+        int start;
+
+        start = (int)Math.Floor(type / 2.0f);
+
+        for (int column = start; column < texture.width; column++)
+        {
+            for (int row = start; row < texture.height; row++)
+            {
+                float[] sum = new float[3];
+
+                for (int channel = 0; channel < 3; channel++)
+                {
+                    float[] mat = new float[type * type];
+
+                    int w = 0;
+                    for (int i = -start; i <= start; i++)
+                    {
+                        for (int j = -start; j <= start; j++)
+                        {
+                            mat[w] = texA.GetPixel(column + i, row + j)[channel];
+                            w++;
+                        }
+                    }
+
+                    float x = mat[(int)Math.Floor(mat.Count() / 2.0f)];
+                    float y = 0;
+
+                    for (int i = 0; i < mat.Count(); i++)
+                    {
+                        if ((i + 1) % 2 == 0)
+                        {
+                            y += 2 * mat[i];
+                        }
+                        else
+                        {
+                            y += mat[i];
+                        }
+                    }
+
+                    y -= x;
+
+                    sum[channel] = (x * ((type * type) - 1)) - y;
+                }
+
+                texture.SetPixel(column, row, new Color(sum[0], sum[1], sum[2]));
+            }
+        }
+
+        forceDo = false;
+    }
+
+    public void M3(int type)
+    {
+        Image a = images[0];
+
+        var texA = a.sprite.texture;
+        texture = new Texture2D(texA.width, texA.height);
+
+        int start;
+
+        start = (int)Math.Floor(type / 2.0f);
+
+        for (int column = start; column < texture.width; column++)
+        {
+            for (int row = start; row < texture.height; row++)
+            {
+                float[] sum = new float[3];
+
+                for (int channel = 0; channel < 3; channel++)
+                {
+                    float[] mat = new float[type * type];
+
+                    int w = 0;
+                    for (int i = -start; i <= start; i++)
+                    {
+                        for (int j = -start; j <= start; j++)
+                        {
+                            mat[w] = texA.GetPixel(column + i, row + j)[channel];
+                            w++;
+                        }
+                    }
+
+                    float x = mat[(int)Math.Floor(mat.Count() / 2.0f)];
+                    float y = 0;
+
+                    for (int i = 0; i < mat.Count(); i++)
+                    {
+                        y += mat[i];
+                    }
+
+                    y -= x;
+
+                    sum[channel] = (x * ((type * type) - 1)) - y;
+                }
+
+                texture.SetPixel(column, row, new Color(sum[0], sum[1], sum[2]));
+            }
+        }
+
         forceDo = false;
     }
 
@@ -1279,14 +1600,7 @@ public class Effect : MonoBehaviour
 
         int start;
 
-        if (kuwaharaInput.text == "")
-        {
-            start = (int)Math.Floor(type / 2.0f);
-        }
-        else
-        {
-            start = (int)Math.Floor(Convert.ToInt32(kuwaharaInput.text, 10) / 2.0f);
-        }
+        start = (int)Math.Floor(type / 2.0f);
 
         for (int column = start; column < texture.width; column++)
         {
@@ -1299,9 +1613,9 @@ public class Effect : MonoBehaviour
                     float[] mat = new float[type * type];
 
                     int w = 0;
-                    for(int i = -start; i <= start; i++)
+                    for (int i = -start; i <= start; i++)
                     {
-                        for(int j = -start; j <= start; j++)
+                        for (int j = -start; j <= start; j++)
                         {
                             mat[w] = texA.GetPixel(column + i, row + j)[channel];
                             w++;
@@ -1311,36 +1625,86 @@ public class Effect : MonoBehaviour
                     float x = mat[(int)Math.Floor(mat.Count() / 2.0f)];
                     float y = 0;
 
-                    for(int i = 0; i < mat.Count(); i++)
+                    for (int i = 0; i < mat.Count(); i++)
                     {
                         y += mat[i];
                     }
 
                     y -= x;
 
-                    sum[channel] = (x * (type*type)) - y;
+                    sum[channel] = (x * (type * type) - 1) - y;
                 }
 
                 texture.SetPixel(column, row, new Color(sum[0], sum[1], sum[2]));
             }
         }
 
-        Apply();
         forceDo = false;
     }
 
-// Gets and Sets ------------------------------------------
-public bool GetState() { return state; }
-public void SetState(bool state) { this.state = state; }
+    public void H2(int type)
+    {
+        Image a = images[0];
 
-public int GetSize() { return size; }
-public void SetSize(int size) { this.size = size; }
+        var texA = a.sprite.texture;
+        texture = new Texture2D(texA.width, texA.height);
 
-public int GetEffect() { return effect; }
-public void SetEffect(int effect) { this.effect = effect; }
+        int start;
 
-public bool GetForceDo() { return forceDo; }
-public void SetForceDo(bool forceDo) { this.forceDo = forceDo; }        
+        start = (int)Math.Floor(type / 2.0f);
+
+        for (int column = start; column < texture.width; column++)
+        {
+            for (int row = start; row < texture.height; row++)
+            {
+                float[] sum = new float[3];
+
+                for (int channel = 0; channel < 3; channel++)
+                {
+                    float[] mat = new float[type * type];
+
+                    int w = 0;
+                    for (int i = -start; i <= start; i++)
+                    {
+                        for (int j = -start; j <= start; j++)
+                        {
+                            mat[w] = texA.GetPixel(column + i, row + j)[channel];
+                            w++;
+                        }
+                    }
+
+                    float x = mat[(int)Math.Floor(mat.Count() / 2.0f)];
+                    float y = 0;
+
+                    for (int i = 0; i < mat.Count(); i++)
+                    {
+                        y += mat[i];
+                    }
+
+                    y -= x;
+
+                    sum[channel] = (x * ((type * type) - 1)) - y;
+                }
+
+                texture.SetPixel(column, row, new Color(sum[0], sum[1], sum[2]));
+            }
+        }
+
+        forceDo = false;
+    }
+
+    // Gets and Sets ------------------------------------------
+    public bool GetState() { return state; }
+    public void SetState(bool state) { this.state = state; }
+
+    public int GetSize() { return size; }
+    public void SetSize(int size) { this.size = size; }
+
+    public int GetEffect() { return effect; }
+    public void SetEffect(int effect) { this.effect = effect; }
+
+    public bool GetForceDo() { return forceDo; }
+    public void SetForceDo(bool forceDo) { this.forceDo = forceDo; }
     // --------------------------------------------------------
 
     // -------------------------------------------------------------------

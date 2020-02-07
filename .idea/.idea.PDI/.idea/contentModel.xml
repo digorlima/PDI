@@ -762,18 +762,25 @@
         <e p="Scenes" t="Include">
           <e p="Main" t="Include">
             <e p="Blur" t="Include">
-              <e p="BlockedBlur.shader" t="Include" />
-              <e p="Blur.shader" t="Include" />
-              <e p="MaskedBlur.shader" t="Include" />
+              <e p="Shaders" t="Include">
+                <e p="BlockedBlur.shader" t="Include" />
+                <e p="Blur.shader" t="Include" />
+                <e p="MaskedBlur.shader" t="Include" />
+              </e>
             </e>
             <e p="Effect" t="Include">
               <e p="Arithmetic.cs" t="Include" />
               <e p="Effect.cs" t="Include" />
             </e>
+            <e p="GeneralScripts" t="Include">
+              <e p="SliderToText.cs" t="Include" />
+            </e>
             <e p="ImagePreset" t="Include">
               <e p="Destroy.cs" t="Include" />
             </e>
-            <e p="OpenFile.cs" t="Include" />
+            <e p="OpenFile" t="Include">
+              <e p="OpenFile.cs" t="Include" />
+            </e>
           </e>
         </e>
         <e p="TextMesh Pro" t="Include">

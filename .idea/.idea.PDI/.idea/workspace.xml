@@ -4,8 +4,27 @@
     <list default="true" id="0003da8b-7c1d-455e-963a-39079d70f8d0" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.PDI/.idea/contentModel.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.PDI/.idea/contentModel.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.PDI/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.PDI/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Main/Blur/Blur.shader" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Main/Blur/Blur.shader" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Main/OpenFile.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Main/OpenFile.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Main/Blur/BlockedBlur.shader" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Main/Blur/BlockedBlur.shader.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Main/Blur/Blur.mat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Main/Blur/Blur.mat.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Main/Blur/Blur.shader" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Main/Blur/Blur.shader.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Main/Blur/MaskedBlur.shader" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Main/Blur/MaskedBlur.shader.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Main/Effect/Controller.controller" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Main/Effect/Controller.controller.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Main/Effect/Effect.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Main/Effect/Effect.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Main/Effect/Fade In.anim" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Main/Effect/Fade In.anim.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Main/Loading.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Main/Loading/Blur.controller" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Main/Loading/Blur.controller.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Main/Loading/Loading.anim" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Main/Loading/Loading.anim.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Main/Main.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Main/Main.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Main/OpenFile.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Main/OpenFile.cs.meta" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -19,14 +38,11 @@
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/Assets/Doozy/Engine/Resources/Data/Soundy/_SoundyDatabase.asset" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scenes/Main/Effect/Arithmetic.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scenes/Main/GeneralScripts/SliderToText.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4CD14385-55E6-4C0E-AEDA-2393D3C9CF4A/85/6b2af049/SceneManager.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scenes/Main/Blur/BlockedBlur.shader" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scenes/Main/Blur/Blur.shader" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scenes/Main/OpenFile.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scenes/Main/Main.unity" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Doozy/Engine/Resources/Data/UIButton/_UIButtonDatabase.asset" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4CD14385-55E6-4C0E-AEDA-2393D3C9CF4A/dc/2b798580/Texture2D.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scenes/Main/Blur/MaskedBlur.shader" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scenes/Main/Effect/Effect.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Doozy/Engine/UI/Resources/UIAnimations/Hide/Basic.asset" root0="FORCE_HIGHLIGHTING" />
   </component>
@@ -37,11 +53,12 @@
         <option value="$PROJECT_DIR$/Assets/OpenFile.cs" />
         <option value="$PROJECT_DIR$/Assets/Scenes/Main/Effect/Arithmetic.cs" />
         <option value="$PROJECT_DIR$/Assets/Scenes/Main/Blur.shader" />
-        <option value="$PROJECT_DIR$/Assets/Scenes/Main/Effect/Effect.cs" />
         <option value="$PROJECT_DIR$/Assets/Scenes/Main/OpenFile.cs" />
         <option value="$PROJECT_DIR$/Assets/Scenes/Main/Blur/Blur.shader" />
         <option value="$PROJECT_DIR$/Assets/Scenes/Main/Blur/SurfaceFormat.shader" />
         <option value="$PROJECT_DIR$/Assets/Scenes/Main/Blur/BlockedBlur.shader" />
+        <option value="$PROJECT_DIR$/Assets/Scenes/Main/GeneralScripts/SliderToText.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scenes/Main/Effect/Effect.cs" />
       </list>
     </option>
   </component>
@@ -57,7 +74,7 @@
     <property name="node.js.path.for.package.tslint" value="project" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
-    <property name="settings.editor.selected.configurable" value="editor.preferences.smartKeys_rider" />
+    <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -113,6 +130,7 @@
       <workItem from="1580703607215" duration="746000" />
       <workItem from="1580704447600" duration="18367000" />
       <workItem from="1580827614380" duration="2637000" />
+      <workItem from="1580955267531" duration="4061000" />
     </task>
     <servers />
   </component>
