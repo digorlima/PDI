@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Doozy.Engine.Utils.ColorModels;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -18,16 +19,38 @@ public class Effect : MonoBehaviour
         BORDERDETECTION,
         AVERAGE, MEDIAN, MODE, MINIMUM, MAXIMUM,
         KUWAHARA, TOMITA, NAGAO, SOMBOONKAEW,
-        M1, M2, M3, H1, H2
+        M1, M2, M3, H1, H2, HIGHBOOST,
+        BITPLANE,
+        GLOBALLIMIAR, AVERAGELIMIAR, MEDIANLIMIAR, AVGMINMAXLIMIAR,
+        NIBLACK,
+        ROTATE, TRANSFORM,
+        POINTDETECTION, LINEDETECTION,
+        CMYK,
+        ROBERTS, CROSSROBERTS, PREWITTGX, PREWITTGY, SOBELGX, SOBELGY, 
+        KRISH, ROBISON, FREICHEN, LAPLACIANO,
+        BRIGHTLOG, BRIGHTEXP, BRIGHTSQRT, BRIGHTSQARE,
+        YUV, HSB
     }
 
     [Header("Objetos do editor")]
     public GameObject allImages;
     public GameObject imagePlaceHolder;
+    //public GameObject loading;
 
     [Header("Objetos para efeitos")]
-    public Slider borderSlider;
+    public Slider offsetSlider;
     public TMP_InputField matInput;
+    public TMP_InputField highBoostInput;
+    public TMP_InputField highBoostMatrix;
+    public Slider bitPlaneSlider;    
+    public TMP_InputField niBlackMatrix;
+    public Slider niBlackSlider;
+    public TMP_InputField XInput;
+    public TMP_InputField YInput;
+    public int optionSelector = 0;
+    public Slider lineDetectionSlider;
+    public Slider contrastMin;
+    public Slider contrastMax;
 
     private int effect;
     private bool state = false;
@@ -113,7 +136,7 @@ public class Effect : MonoBehaviour
                 break;
 
             case (int)Effects.CONTRAST:
-                Contrast();
+                Contrast(GetConstrastMin(), GetConstrastMax());
                 break;
 
             case (int)Effects.NEGATIVE:
@@ -191,6 +214,114 @@ public class Effect : MonoBehaviour
             case (int)Effects.H2:
                 H2(GetMat(3));
                 break;
+            
+            case (int)Effects.HIGHBOOST:
+                HighBoost(GetHighBoostMat(3));
+                break;
+            
+            case (int)Effects.BITPLANE:
+                BitPlane(GetPlaneSlider(1));
+                break;
+            
+            case (int)Effects.GLOBALLIMIAR:
+                GlobalLimiar();
+                break;
+            
+            case (int)Effects.AVERAGELIMIAR:
+                AverageLimiar(GetMat(3));
+                break;
+            
+            case (int)Effects.MEDIANLIMIAR:
+                MedianLimiar(GetMat(3));
+                break;
+            
+            case (int)Effects.AVGMINMAXLIMIAR:
+                AvgMinMaxLimiar(GetMat(3));
+                break;
+            
+            case (int)Effects.NIBLACK:
+                NiBlack(GetNiBlackMat(15));
+                break;
+            
+            case (int)Effects.TRANSFORM:
+                Transform(GetXInput(), GetYInput());
+                break;
+            
+            case (int)Effects.POINTDETECTION:
+                PointDetection();
+                break;
+            
+            case (int)Effects.LINEDETECTION:
+                LineDetection(optionSelector);
+                break;
+            
+            case (int)Effects.CMYK:
+                CMYK(optionSelector);
+                break;
+            
+            case (int)Effects.ROBERTS:
+                Roberts();
+                break;
+            
+            case (int)Effects.CROSSROBERTS:
+                CrossRoberts();
+                break;
+            
+            case (int)Effects.PREWITTGX:
+                PrewittGx();
+                break;
+            
+            case (int)Effects.PREWITTGY:
+                PrewittGy();
+                break;
+            
+            case (int)Effects.SOBELGX:
+                SobelGx();
+                break;
+            
+            case (int)Effects.SOBELGY:
+                SobelGy();
+                break;
+            
+            case (int)Effects.KRISH:
+                Krish();
+                break;
+            
+            case (int)Effects.ROBISON:
+                Robison();
+                break;
+            
+            case (int)Effects.FREICHEN:
+                Freichen();
+                break;
+            
+            case (int)Effects.LAPLACIANO:
+                Laplaciano(optionSelector);
+                break;
+            
+            case (int)Effects.BRIGHTLOG:
+                BrightnessLog();
+                break;
+            
+            case (int)Effects.BRIGHTEXP:
+                BrightnessExp();
+                break;
+            
+            case (int)Effects.BRIGHTSQRT:
+                BrightnessSqrt();
+                break;
+            
+            case (int)Effects.BRIGHTSQARE:
+                BrightnessSquare();
+                break;
+            
+            case (int)Effects.YUV:
+                YUV(optionSelector);
+                break;
+            
+            case (int)Effects.HSB:
+                BrightnessSquare();
+                break;
         }
 
         Apply();
@@ -222,24 +353,130 @@ public class Effect : MonoBehaviour
             matInput.text = standard + "";
             return standard;
         }
+
+        int value = Convert.ToInt32(matInput.text, 10);
+
+        if (value % 2 == 0)
+        {
+            value--;
+            matInput.text = value + "";
+        }
+        else if (value < 0){
+            value = standard;
+            matInput.text = value + "";
+        }
+
+        return value;
+    }
+    
+    public int GetHighBoostMat(int standard)
+    {
+        if (highBoostMatrix.text == "")
+        {
+            highBoostMatrix.text = standard + "";
+            return standard;
+        }
         else
         {
-            int value = Convert.ToInt32(matInput.text, 10);
+            int value = Convert.ToInt32(highBoostMatrix.text, 10);
 
             if (value % 2 == 0)
             {
                 value--;
-                matInput.text = value + "";
+                highBoostMatrix.text = value + "";
             }
             else if (value < 0){
                 value = standard;
-                matInput.text = value + "";
+                highBoostMatrix.text = value + "";
             }
 
+            GetHighBoostInput(1);
+            
             return value;
         }
     }
+    
+    public void GetHighBoostInput(int standard)
+    {
+        if (highBoostInput.text == "")
+        {
+            highBoostInput.text = standard + "";
+        }
+    }
 
+    public int GetPlaneSlider(int standard)
+    {
+        if ((int) bitPlaneSlider.value == 0)
+        {
+            bitPlaneSlider.value = standard;
+        }
+
+        return (int)bitPlaneSlider.value;
+    }
+
+    public int GetNiBlackMat(int standard)
+    {
+        if (niBlackMatrix.text == "")
+        {
+            niBlackMatrix.text = standard + "";
+            return standard;
+        }
+
+        int value = Convert.ToInt32(niBlackMatrix.text, 10);
+
+        if (value % 2 == 0)
+        {
+            value--;
+            niBlackMatrix.text = value + "";
+        }
+        else if (value < 0){
+            value = standard;
+            niBlackMatrix.text = value + "";
+        }
+
+        return value;
+    }
+
+    public int GetXInput()
+    {
+        if (XInput.text == "")
+        {
+            XInput.text = "0";
+        }
+
+        return Int32.Parse(XInput.text);
+    }
+
+    public int GetYInput()
+    {
+        if (YInput.text == "")
+        {
+            YInput.text = "0";
+        }
+
+        return Int32.Parse(YInput.text);
+    }
+
+    public void SetLineAngle(int lineAngle)
+    {
+        this.optionSelector = lineAngle;
+    }
+
+    public float GetConstrastMin()
+    {
+        if (contrastMin.value > contrastMax.value)
+        {
+            contrastMin.value = contrastMax.value;
+        }
+
+        return contrastMin.value;
+    }
+
+    public float GetConstrastMax()
+    {
+        return contrastMax.value;
+    }
+    
     public void Add()
     {
         Image a = images[0];
@@ -258,11 +495,11 @@ public class Effect : MonoBehaviour
 
                 for (int channel = 0; channel < 3; channel++)
                 {
-                    int pixelA = (int)(texA.GetPixel(row, column)[channel] * 255);
-                    int pixelB = (int)(texB.GetPixel(row, column)[channel] * 255);
-                    int pixel = pixelA + pixelB;
+                    float pixelA = texA.GetPixel(row, column)[channel];
+                    float pixelB = texB.GetPixel(row, column)[channel];
+                    float pixel = pixelA + pixelB;
 
-                    sum[channel] = pixel / 255.0f;
+                    sum[channel] = pixel;
                 }
 
                 texture.SetPixel(row, column, new Color(sum[0], sum[1], sum[2]));
@@ -290,11 +527,11 @@ public class Effect : MonoBehaviour
 
                 for (int channel = 0; channel < 3; channel++)
                 {
-                    int pixelA = (int)(texA.GetPixel(row, column)[channel] * 255);
-                    int pixelB = (int)(texB.GetPixel(row, column)[channel] * 255);
-                    int pixel = pixelA - pixelB;
+                    float pixelA = texA.GetPixel(row, column)[channel];
+                    float pixelB = texB.GetPixel(row, column)[channel];
+                    float pixel = pixelA - pixelB;
 
-                    sum[channel] = pixel / 255.0f;
+                    sum[channel] = pixel;
                 }
 
                 texture.SetPixel(row, column, new Color(sum[0], sum[1], sum[2]));
@@ -322,11 +559,11 @@ public class Effect : MonoBehaviour
 
                 for (int channel = 0; channel < 3; channel++)
                 {
-                    int pixelA = (int)(texA.GetPixel(row, column)[channel] * 255);
-                    int pixelB = (int)(texB.GetPixel(row, column)[channel] * 255);
-                    int pixel = pixelA * pixelB;
+                    float pixelA = texA.GetPixel(row, column)[channel];
+                    float pixelB = texB.GetPixel(row, column)[channel];
+                    float pixel = pixelA * pixelB;
 
-                    sum[channel] = pixel / 255.0f;
+                    sum[channel] = pixel;
                 }
 
                 texture.SetPixel(row, column, new Color(sum[0], sum[1], sum[2]));
@@ -354,16 +591,16 @@ public class Effect : MonoBehaviour
 
                 for (int channel = 0; channel < 3; channel++)
                 {
-                    int pixelA = (int)(texA.GetPixel(row, column)[channel] * 255);
-                    int pixelB = (int)(texB.GetPixel(row, column)[channel] * 255);
-                    int pixel = 0;
+                    float pixelA = texA.GetPixel(row, column)[channel];
+                    float pixelB = texB.GetPixel(row, column)[channel];
+                    float pixel = 0;
 
-                    if (pixelB != 0)
+                    if (pixelB != 0.0f)
                     {
                         pixel = pixelA / pixelB;
                     }
 
-                    sum[channel] = pixel / 255.0f;
+                    sum[channel] = pixel;
                 }
 
                 texture.SetPixel(row, column, new Color(sum[0], sum[1], sum[2]));
@@ -391,11 +628,11 @@ public class Effect : MonoBehaviour
 
                 for (int channel = 0; channel < 3; channel++)
                 {
-                    int pixelA = (int)(texA.GetPixel(row, column)[channel] * 255);
-                    int pixelB = (int)(texB.GetPixel(row, column)[channel] * 255);
+                    int pixelA = (int)(texA.GetPixel(row, column)[channel] * 10000);
+                    int pixelB = (int)(texB.GetPixel(row, column)[channel] * 10000);
                     int pixel = pixelA & pixelB;
 
-                    sum[channel] = pixel / 255.0f;
+                    sum[channel] = pixel / 10000.0f;
                 }
 
                 texture.SetPixel(row, column, new Color(sum[0], sum[1], sum[2]));
@@ -423,11 +660,11 @@ public class Effect : MonoBehaviour
 
                 for (int channel = 0; channel < 3; channel++)
                 {
-                    int pixelA = (int)(texA.GetPixel(row, column)[channel] * 255);
-                    int pixelB = (int)(texB.GetPixel(row, column)[channel] * 255);
+                    int pixelA = (int)(texA.GetPixel(row, column)[channel] * 10000);
+                    int pixelB = (int)(texB.GetPixel(row, column)[channel] * 10000);
                     int pixel = pixelA | pixelB;
 
-                    sum[channel] = pixel / 255.0f;
+                    sum[channel] = pixel / 10000.0f;
                 }
 
                 texture.SetPixel(row, column, new Color(sum[0], sum[1], sum[2]));
@@ -455,11 +692,11 @@ public class Effect : MonoBehaviour
 
                 for (int channel = 0; channel < 3; channel++)
                 {
-                    int pixelA = (int)(texA.GetPixel(row, column)[channel] * 255);
-                    int pixelB = (int)(texB.GetPixel(row, column)[channel] * 255);
+                    int pixelA = (int)(texA.GetPixel(row, column)[channel] * 10000);
+                    int pixelB = (int)(texB.GetPixel(row, column)[channel] * 10000);
                     int pixel = pixelA ^ pixelB;
 
-                    sum[channel] = pixel / 255.0f;
+                    sum[channel] = pixel / 10000.0f;
                 }
 
                 texture.SetPixel(row, column, new Color(sum[0], sum[1], sum[2]));
@@ -523,7 +760,7 @@ public class Effect : MonoBehaviour
         Clean();
     }
 
-    public void Contrast()
+    public void Contrast(float min, float max)
     {
         Image a = images[0];
 
@@ -531,6 +768,7 @@ public class Effect : MonoBehaviour
         texture = new Texture2D(texA.width, texA.height);
 
         float hi = 0;
+        float lo = 1;
 
         for (int column = 0; column < texture.width; column++)
         {
@@ -544,23 +782,32 @@ public class Effect : MonoBehaviour
                     {
                         hi = pixel;
                     }
+                    else if (pixel < lo)
+                    {
+                        lo = pixel;
+                    }
                 }
             }
         }
-
-        float x = 1.0f / hi;
-
+        
         for (int column = 0; column < texture.width; column++)
         {
             for (int row = 0; row < texture.height; row++)
             {
-                float value = texA.GetPixel(column, row)[0] * x;
+                float[] sum = new float[3];
+                
+                for (int channel = 0; channel < 3; channel++)
+                {
+                    float pixel  = texA.GetPixel(column, row)[channel];
+                    
+                    sum[channel] = ((max - min)/(hi - lo)) * (pixel - lo) + min;
+                }
 
-                texture.SetPixel(column, row, new Color(value, value, value));
+                texture.SetPixel(column, row, new Color(sum[0], sum[1], sum[2]));
             }
         }
 
-        Clean();
+        forceDo = false;
     }
 
     public void Negative()
@@ -650,7 +897,7 @@ public class Effect : MonoBehaviour
 
                 float pixel = texA.GetPixel(column, row)[0];
 
-                if (pixel > previous + borderSlider.value || pixel < previous - borderSlider.value)
+                if (pixel > previous + offsetSlider.value || pixel < previous - offsetSlider.value)
                 {
                     texture.SetPixel(column, row, new Color(0.5f, 0.5f, 0.5f));
                 }
@@ -671,7 +918,7 @@ public class Effect : MonoBehaviour
 
                 float pixel = texA.GetPixel(column, row)[0];
 
-                if (pixel > previous + borderSlider.value || pixel < previous - borderSlider.value)
+                if (pixel > previous + offsetSlider.value || pixel < previous - offsetSlider.value)
                 {
                     float value = texture.GetPixel(column, row)[0] + 0.5f;
                     texture.SetPixel(column, row, new Color(value, value, value));
@@ -1472,7 +1719,9 @@ public class Effect : MonoBehaviour
 
                     y -= x;
 
-                    sum[channel] = (x * ((type * type))) - y;
+                    x *= (type * type);
+                    
+                    sum[channel] = x - y;
                 }
 
                 texture.SetPixel(column, row, new Color(sum[0], sum[1], sum[2]));
@@ -1513,24 +1762,22 @@ public class Effect : MonoBehaviour
                         }
                     }
 
-                    float x = mat[(int)Math.Floor(mat.Count() / 2.0f)];
+                    float x = mat[(int)Math.Floor(mat.Count() / 2.0f)] * (type + type - 1);
                     float y = 0;
 
                     for (int i = 0; i < mat.Count(); i++)
                     {
                         if ((i + 1) % 2 == 0)
                         {
-                            y += 2 * mat[i];
+                            y += (type - 1) * mat[i];
                         }
                         else
                         {
-                            y += mat[i];
+                            x += mat[i];
                         }
                     }
 
-                    y -= x;
-
-                    sum[channel] = (x * ((type * type) - 1)) - y;
+                    sum[channel] = x - y;
                 }
 
                 texture.SetPixel(column, row, new Color(sum[0], sum[1], sum[2]));
@@ -1571,17 +1818,18 @@ public class Effect : MonoBehaviour
                         }
                     }
 
-                    float x = mat[(int)Math.Floor(mat.Count() / 2.0f)];
+                    float x = mat[(int)Math.Floor(mat.Count() / 2.0f)] * (type + type - 1);
                     float y = 0;
 
                     for (int i = 0; i < mat.Count(); i++)
                     {
-                        y += mat[i];
+                        if ((i + 1) % 2 == 0)
+                        {
+                            y += mat[i];
+                        }
                     }
 
-                    y -= x;
-
-                    sum[channel] = (x * ((type * type) - 1)) - y;
+                    sum[channel] = x - y;
                 }
 
                 texture.SetPixel(column, row, new Color(sum[0], sum[1], sum[2]));
@@ -1622,17 +1870,18 @@ public class Effect : MonoBehaviour
                         }
                     }
 
-                    float x = mat[(int)Math.Floor(mat.Count() / 2.0f)];
+                    float x = mat[(int)Math.Floor(mat.Count() / 2.0f)] * (type + 1);
                     float y = 0;
 
                     for (int i = 0; i < mat.Count(); i++)
                     {
-                        y += mat[i];
+                        if ((i + 1) % 2 == 0)
+                        {
+                            y += mat[i];
+                        }
                     }
 
-                    y -= x;
-
-                    sum[channel] = (x * (type * type) - 1) - y;
+                    sum[channel] = x - y;
                 }
 
                 texture.SetPixel(column, row, new Color(sum[0], sum[1], sum[2]));
@@ -1683,7 +1932,9 @@ public class Effect : MonoBehaviour
 
                     y -= x;
 
-                    sum[channel] = (x * ((type * type) - 1)) - y;
+                    x *= ((type * type) - 1); 
+                    
+                    sum[channel] = x - y;
                 }
 
                 texture.SetPixel(column, row, new Color(sum[0], sum[1], sum[2]));
@@ -1692,6 +1943,1493 @@ public class Effect : MonoBehaviour
 
         forceDo = false;
     }
+    
+    public void HighBoost(int type)
+    {
+        Image a = images[0];
+
+        var texA = a.sprite.texture;
+        texture = new Texture2D(texA.width, texA.height);
+
+        int start;
+
+        start = (int)Math.Floor(type / 2.0f);
+
+        for (int column = start; column < texture.width; column++)
+        {
+            for (int row = start; row < texture.height; row++)
+            {
+                float[] sum = new float[3];
+
+                for (int channel = 0; channel < 3; channel++)
+                {
+                    float[] mat = new float[type * type];
+
+                    int w = 0;
+                    for (int i = -start; i <= start; i++)
+                    {
+                        for (int j = -start; j <= start; j++)
+                        {
+                            mat[w] = texA.GetPixel(column + i, row + j)[channel];
+                            w++;
+                        }
+                    }
+
+                    float x = mat[(int)Math.Floor(mat.Count() / 2.0f)];
+                    float y = 0;
+
+                    for (int i = 0; i < mat.Count(); i++)
+                    {
+                        y += mat[i];
+                    }
+
+                    y -= x;
+
+                    x *= ((type * type) * Int32.Parse(highBoostInput.text)) - 1;
+                    
+                    sum[channel] = x - y;
+                }
+
+                texture.SetPixel(column, row, new Color(sum[0], sum[1], sum[2]));
+            }
+        }
+
+        forceDo = false;
+    }
+
+    public void BitPlane(int plane)
+    {
+        Image a = images[0];
+
+        var texA = a.sprite.texture;
+        texture = new Texture2D(texA.width, texA.height);
+
+        for (int column = 0; column < texture.width; column++)
+        {
+            for (int row = 0; row < texture.height; row++)
+            {
+                int pixel = (int)(texA.GetPixel(column, row)[0] * 255);
+
+                int valueInt = pixel & (int)Mathf.Pow(plane, 2);
+
+                float value = valueInt / 255.0f;
+
+                texture.SetPixel(column, row, new Color(value, value, value));
+            }
+        }
+
+        forceDo = false;
+    }
+
+    public void GlobalLimiar()
+    {
+        Image a = images[0];
+
+        var texA = a.sprite.texture;
+        texture = new Texture2D(texA.width, texA.height);
+
+        for (int column = 0; column < texture.width; column++)
+        {
+            for (int row = 0; row < texture.height; row++)
+            {
+                if (texA.GetPixel(column, row)[0] < offsetSlider.value)
+                {
+                    texture.SetPixel(column, row, new Color(0,0,0));
+                }
+                else
+                {
+                    texture.SetPixel(column, row, new Color(1,1,1));
+                }
+            }
+        }
+
+        forceDo = false;
+    }
+    
+    public void AverageLimiar(int type)
+    {
+        Image a = images[0];
+
+        var texA = a.sprite.texture;
+        texture = new Texture2D(texA.width, texA.height);
+
+        int start = (int)Math.Floor(type / 2.0f);
+
+        for (int column = start; column < texture.width; column+=3)
+        {
+            for (int row = start; row < texture.height; row+=3)
+            {
+                float sum = 0.0f;
+
+                for (int averageRow = -start; averageRow <= start; averageRow++)
+                {
+                    for (int averageCol = -start; averageCol <= start; averageCol++)
+                    {
+                        sum += texA.GetPixel(averageCol + column, averageRow + row)[0];
+                    }
+                }
+
+                float average = sum / (type * type);
+
+                for (int averageRow = -start; averageRow <= start; averageRow++)
+                {
+                    for (int averageCol = -start; averageCol <= start; averageCol++)
+                    {
+                        if (texA.GetPixel(averageCol + column, averageRow + row)[0] < average)
+                        {
+                            texture.SetPixel(averageCol + column, averageRow + row, new Color(0,0,0));
+                        }
+                        else
+                        {
+                            texture.SetPixel(averageCol + column, averageRow + row, new Color(1,1,1));
+                        }
+                    }
+                }
+            }
+        }
+
+        forceDo = false;
+    }
+    
+    public void MedianLimiar(int type)
+    {
+        Image a = images[0];
+
+        var texA = a.sprite.texture;
+        texture = new Texture2D(texA.width, texA.height);
+
+        int start = (int)Math.Floor(type / 2.0f);
+
+        for (int column = start; column < texture.width; column+=3)
+        {
+            for (int row = start; row < texture.height; row+=3)
+            {
+                List<float> pixels = new List<float>();
+
+                for (int averageRow = -start; averageRow <= start; averageRow++)
+                {
+                    for (int averageCol = -start; averageCol <= start; averageCol++)
+                    {
+                        pixels.Add(texA.GetPixel(averageCol + column, averageRow + row)[0]);
+                    }
+                }
+
+                pixels.Sort();
+                float median = pixels[(int)Math.Floor((type * type) / 2.0f)];
+
+                for (int averageRow = -start; averageRow <= start; averageRow++)
+                {
+                    for (int averageCol = -start; averageCol <= start; averageCol++)
+                    {
+                        if (texA.GetPixel(averageCol + column, averageRow + row)[0] < median)
+                        {
+                            texture.SetPixel(averageCol + column, averageRow + row, new Color(0,0,0));
+                        }
+                        else
+                        {
+                            texture.SetPixel(averageCol + column, averageRow + row, new Color(1,1,1));
+                        }
+                    }
+                }
+            }
+        }
+
+        forceDo = false;
+    }
+    
+    public void AvgMinMaxLimiar(int type)
+    {
+        Image a = images[0];
+
+        var texA = a.sprite.texture;
+        texture = new Texture2D(texA.width, texA.height);
+
+        int start = (int)Math.Floor(type / 2.0f);
+
+        for (int column = start; column < texture.width; column+=type)
+        {
+            for (int row = start; row < texture.height; row+=type)
+            {
+                List<float> pixels = new List<float>();
+
+                for (int averageRow = -start; averageRow <= start; averageRow++)
+                {
+                    for (int averageCol = -start; averageCol <= start; averageCol++)
+                    {
+                        pixels.Add(texA.GetPixel(averageCol + column, averageRow + row)[0]);
+                    }
+                }
+
+                pixels.Sort();
+                float average = (pixels[0] + pixels[pixels.Count - 1])/2;
+
+                for (int averageRow = -start; averageRow <= start; averageRow++)
+                {
+                    for (int averageCol = -start; averageCol <= start; averageCol++)
+                    {
+                        if (texA.GetPixel(averageCol + column, averageRow + row)[0] < average)
+                        {
+                            texture.SetPixel(averageCol + column, averageRow + row, new Color(0,0,0));
+                        }
+                        else
+                        {
+                            texture.SetPixel(averageCol + column, averageRow + row, new Color(1,1,1));
+                        }
+                    }
+                }
+            }
+        }
+
+        forceDo = false;
+    }
+    
+    public void NiBlack(int type)
+    {
+        Image a = images[0];
+
+        var texA = a.sprite.texture;
+        texture = new Texture2D(texA.width, texA.height);
+
+        int start = (int)Math.Floor(type / 2.0f);
+
+        for (int column = start; column < texture.width; column+=type)
+        {
+            for (int row = start; row < texture.height; row+=type)
+            {
+                List<float> pixels = new List<float>();
+
+                for (int averageRow = -start; averageRow <= start; averageRow++)
+                {
+                    for (int averageCol = -start; averageCol <= start; averageCol++)
+                    {
+                        pixels.Add(texA.GetPixel(averageCol + column, averageRow + row)[0]);
+                    }
+                }
+                
+                float average = pixels.Average();
+
+                float sum = 0.0f;
+
+                for (int averageRow = -start; averageRow <= start; averageRow++)
+                {
+                    for (int averageCol = -start; averageCol <= start; averageCol++)
+                    {
+                        sum += Mathf.Pow(texA.GetPixel(column, row)[0] - average, 2);
+                    }
+                }
+
+                float deviation = Mathf.Sqrt(sum / (type * type));
+
+                float value = average + (niBlackSlider.value * deviation);
+                
+                for (int averageRow = -start; averageRow <= start; averageRow++)
+                {
+                    for (int averageCol = -start; averageCol <= start; averageCol++)
+                    {
+                        if (texA.GetPixel(averageCol + column, averageRow + row)[0] < value)
+                        {
+                            texture.SetPixel(averageCol + column, averageRow + row, new Color(0,0,0));
+                        }
+                        else
+                        {
+                            texture.SetPixel(averageCol + column, averageRow + row, new Color(1,1,1));
+                        }
+                    }
+                }
+
+                texture.SetPixel(column, row, new Color(value,value,value));
+            }
+        }
+
+        forceDo = false;
+    }
+
+    public void Transform(int x, int y)
+    {
+        Image a = images[0];
+
+        var texA = a.sprite.texture;
+        texture = new Texture2D(texA.width, texA.height);
+        
+        if (x < 0)
+        {
+            if (y < 0)
+            {
+                for (int column = texture.width - 1 + x; column > 0; column--)
+                {
+                    for (int row = texture.height - 1 + y; row > 0; row--)
+                    {
+                        float[] sum = new float[3];
+                        
+                        for (int channel = 0; channel < 3; channel++)
+                        {
+                            sum[channel] = texA.GetPixel(column - x, row - y)[channel];
+                        }
+                        
+                        texture.SetPixel(column, row, new Color(sum[0], sum[1], sum[2]));
+                    }
+                }
+            }
+            else
+            {
+                for (int column = texture.width - 1 + x; column > 0; column--)
+                {
+                    for (int row = y; row < texture.height; row++)
+                    {
+                        float[] sum = new float[3];
+                        
+                        for (int channel = 0; channel < 3; channel++)
+                        {
+                            sum[channel] = texA.GetPixel(column - x, row - y)[channel];
+                        }
+                        
+                        texture.SetPixel(column, row, new Color(sum[0], sum[1], sum[2]));
+                    }
+                }
+            }
+        }
+        else
+        {
+            if (y < 0)
+            {
+                for (int column = x; column < texture.width; column++)
+                {
+                    for (int row = texture.height - 1 + y; row > 0; row--)
+                    {
+                        float[] sum = new float[3];
+                        
+                        for (int channel = 0; channel < 3; channel++)
+                        {
+                            sum[channel] = texA.GetPixel(column - x, row - y)[channel];
+                        }
+                        
+                        texture.SetPixel(column, row, new Color(sum[0], sum[1], sum[2]));
+                    }
+                }
+            }
+            else
+            {
+                for (int column = x; column < texture.width; column++)
+                {
+                    for (int row = y; row < texture.height; row++)
+                    {
+                        float[] sum = new float[3];
+                        
+                        for (int channel = 0; channel < 3; channel++)
+                        {
+                            sum[channel] = texA.GetPixel(column - x, row - y)[channel];
+                        }
+                        
+                        texture.SetPixel(column, row, new Color(sum[0], sum[1], sum[2]));
+                    }
+                }
+            }
+        }
+
+        forceDo = false;
+    }
+
+    public void PointDetection()
+    {
+        Image a = images[0];
+
+        var texA = a.sprite.texture;
+        texture = new Texture2D(texA.width, texA.height);
+
+        int start;
+
+        int type = 3;
+        
+        start = (int)Math.Floor(type / 2.0f);
+
+        for (int column = start; column < texture.width; column++)
+        {
+            for (int row = start; row < texture.height; row++)
+            {
+                float[] sum = new float[3];
+
+                for (int channel = 0; channel < 3; channel++)
+                {
+                    float[] mat = new float[type * type];
+
+                    int w = 0;
+                    for (int i = -start; i <= start; i++)
+                    {
+                        for (int j = -start; j <= start; j++)
+                        {
+                            mat[w] = texA.GetPixel(column + i, row + j)[channel];
+                            w++;
+                        }
+                    }
+
+                    float x = mat[(int)Math.Floor(mat.Count() / 2.0f)];
+                    float y = 0;
+
+                    for (int i = 0; i < mat.Count(); i++)
+                    {
+                        y += mat[i];
+                    }
+
+                    y -= x;
+
+                    x *= ((type * type) - 1); 
+                    
+                    float value = x - y;
+
+                    sum[channel] = 0;
+                    if (value > offsetSlider.value)
+                    {
+                        sum[channel] = value;
+                    }
+                }
+
+                texture.SetPixel(column, row, new Color(sum[0], sum[1], sum[2]));
+            }
+        }
+
+        forceDo = false;
+    } 
+    
+    public void LineDetection(int angle)
+    {
+        Image a = images[0];
+
+        var texA = a.sprite.texture;
+        texture = new Texture2D(texA.width, texA.height);
+
+        int start;
+
+        int type = 3;
+        
+        start = (int)Math.Floor(type / 2.0f);
+
+        if (angle == 90)
+        {
+            for (int column = start; column < texture.width; column++)
+            {
+                for (int row = start; row < texture.height; row++)
+                {
+                    float[] sum = new float[3];
+
+                    for (int channel = 0; channel < 3; channel++)
+                    {
+                        float[] mat = new float[type * type];
+
+                        int w = 0;
+                        for (int i = -start; i <= start; i++)
+                        {
+                            for (int j = -start; j <= start; j++)
+                            {
+                                mat[w] = texA.GetPixel(column + i, row + j)[channel];
+                                w++;
+                            }
+                        }
+
+                        float x = mat[4] + mat[5] + mat[6];
+                        float y = 0;
+
+                        for (int i = 0; i < mat.Count(); i++)
+                        {
+                            y += mat[i];
+                        }
+
+                        y -= x;
+
+                        x *= 2; 
+                    
+                        float value = x - y;
+
+                        sum[channel] = 0;
+                        if (value > lineDetectionSlider.value)
+                        {
+                            sum[channel] = value;
+                        }
+                    }
+
+                    texture.SetPixel(column, row, new Color(sum[0], sum[1], sum[2]));
+                }
+            }
+        }
+        else if (angle == 0)
+        {
+            for (int column = start; column < texture.width; column++)
+            {
+                for (int row = start; row < texture.height; row++)
+                {
+                    float[] sum = new float[3];
+
+                    for (int channel = 0; channel < 3; channel++)
+                    {
+                        float[] mat = new float[type * type];
+
+                        int w = 0;
+                        for (int i = -start; i <= start; i++)
+                        {
+                            for (int j = -start; j <= start; j++)
+                            {
+                                mat[w] = texA.GetPixel(column + i, row + j)[channel];
+                                w++;
+                            }
+                        }
+
+                        float x = mat[1] + mat[4] + mat[7];
+                        float y = 0;
+
+                        for (int i = 0; i < mat.Count(); i++)
+                        {
+                            y += mat[i];
+                        }
+
+                        y -= x;
+
+                        x *= 2; 
+                    
+                        float value = x - y;
+
+                        sum[channel] = 0;
+                        if (value > offsetSlider.value)
+                        {
+                            sum[channel] = value;
+                        }
+                    }
+
+                    texture.SetPixel(column, row, new Color(sum[0], sum[1], sum[2]));
+                }
+            }
+
+        }
+        else if (angle == 135)
+        {
+            for (int column = start; column < texture.width; column++)
+            {
+                for (int row = start; row < texture.height; row++)
+                {
+                    float[] sum = new float[3];
+
+                    for (int channel = 0; channel < 3; channel++)
+                    {
+                        float[] mat = new float[type * type];
+
+                        int w = 0;
+                        for (int i = -start; i <= start; i++)
+                        {
+                            for (int j = -start; j <= start; j++)
+                            {
+                                mat[w] = texA.GetPixel(column + i, row + j)[channel];
+                                w++;
+                            }
+                        }
+
+                        float x = mat[6] + mat[4] + mat[2];
+                        float y = 0;
+
+                        for (int i = 0; i < mat.Count(); i++)
+                        {
+                            y += mat[i];
+                        }
+
+                        y -= x;
+
+                        x *= 2; 
+                    
+                        float value = x - y;
+
+                        sum[channel] = 0;
+                        if (value > offsetSlider.value)
+                        {
+                            sum[channel] = value;
+                        }
+                    }
+
+                    texture.SetPixel(column, row, new Color(sum[0], sum[1], sum[2]));
+                }
+            }
+        }
+        else if (angle == 45)
+        {
+            for (int column = start; column < texture.width; column++)
+            {
+                for (int row = start; row < texture.height; row++)
+                {
+                    float[] sum = new float[3];
+
+                    for (int channel = 0; channel < 3; channel++)
+                    {
+                        float[] mat = new float[type * type];
+
+                        int w = 0;
+                        for (int i = -start; i <= start; i++)
+                        {
+                            for (int j = -start; j <= start; j++)
+                            {
+                                mat[w] = texA.GetPixel(column + i, row + j)[channel];
+                                w++;
+                            }
+                        }
+
+                        float x = mat[0] + mat[4] + mat[8];
+                        float y = 0;
+
+                        for (int i = 0; i < mat.Count(); i++)
+                        {
+                            y += mat[i];
+                        }
+
+                        y -= x;
+
+                        x *= 2; 
+                    
+                        float value = x - y;
+
+                        sum[channel] = 0;
+                        if (value > offsetSlider.value)
+                        {
+                            sum[channel] = value;
+                        }
+                    }
+
+                    texture.SetPixel(column, row, new Color(sum[0], sum[1], sum[2]));
+                }
+            }
+        }
+        
+        forceDo = false;
+    }
+
+    public void CMYK(int color)
+    {
+        Image a = images[0];
+
+        var texA = a.sprite.texture;
+        texture = new Texture2D(texA.width, texA.height);
+        
+        for (int column = 0; column < texture.width; column++)
+        {
+            for (int row = 0; row < texture.height; row++)
+            {
+                float r = texA.GetPixel(column, row)[0];
+                float g = texA.GetPixel(column, row)[1];
+                float b = texA.GetPixel(column, row)[2];
+
+                float k = 1 - Mathf.Max(Mathf.Max(r, g), b);
+                float c = (1 - r - k) / (1 - k);
+                float m = (1 - g - k) / (1 - k);
+                float y = (1 - b - k) / (1 - k);
+
+
+                switch (color)
+                {
+                    case 0:
+                        texture.SetPixel(column, row, new Color(0, c, c));
+                        break;
+                    
+                    case 1:
+                        texture.SetPixel(column, row, new Color(m, 0, m));
+                        break;
+                    
+                    case 2:
+                        texture.SetPixel(column, row, new Color(y, y, 0));
+                        break;
+                    
+                    case 3:
+                        texture.SetPixel(column, row, new Color(k, k, k));
+                        break;
+                    
+                }
+            }
+        }
+    }
+
+    public void Roberts()
+    {
+        Image a = images[0];
+
+        var texA = a.sprite.texture;
+        texture = new Texture2D(texA.width, texA.height);
+        
+        for (int column = 0; column < texture.width; column++)
+        {
+            for (int row = 0; row < texture.height; row++)
+            {
+                float[] sum = new float[3];
+                
+                for (int channel = 0; channel < 3; channel++)
+                {
+                    float[] pixel = new float[4];
+
+                    int k = 0;
+                    for (int i = 0; i < 2; i++)
+                    {
+                        for (int j = 0; j < 2; j++)
+                        {
+                            pixel[k] = texA.GetPixel(column + i, row + j)[channel];
+                            
+                            k++;
+                        }
+                    }
+
+                    float x = pixel[0] - pixel[2];
+                    float y = pixel[0] - pixel[1];
+
+                    sum[channel] = Mathf.Abs(x) + Mathf.Abs(y);
+                }
+                
+                texture.SetPixel(column, row, new Color(sum[0], sum[1], sum[2]));
+            }
+        }
+        
+        Clean();
+    }
+    
+    public void CrossRoberts()
+    {
+        Image a = images[0];
+
+        var texA = a.sprite.texture;
+        texture = new Texture2D(texA.width, texA.height);
+        
+        for (int column = 0; column < texture.width; column++)
+        {
+            for (int row = 0; row < texture.height; row++)
+            {
+                float[] sum = new float[3];
+                
+                for (int channel = 0; channel < 3; channel++)
+                {
+                    float[] pixel = new float[4];
+
+                    int k = 0;
+                    for (int i = 0; i < 2; i++)
+                    {
+                        for (int j = 0; j < 2; j++)
+                        {
+                            pixel[k] = texA.GetPixel(column + i, row + j)[channel];
+                            
+                            k++;
+                        }
+                    }
+
+                    float x = pixel[0] - pixel[3];
+                    float y = pixel[1] - pixel[2];
+
+                    sum[channel] = Mathf.Abs(x) + Mathf.Abs(y);
+                }
+                
+                texture.SetPixel(column, row, new Color(sum[0], sum[1], sum[2]));
+            }
+        }
+        
+        Clean();
+    }
+    
+    public void PrewittGx()
+    {
+        Image a = images[0];
+
+        var texA = a.sprite.texture;
+        texture = new Texture2D(texA.width, texA.height);
+        
+        for (int column = 0; column < texture.width; column++)
+        {
+            for (int row = 0; row < texture.height; row++)
+            {
+                float[] sum = new float[3];
+                
+                for (int channel = 0; channel < 3; channel++)
+                {
+                    float[] pixel = new float[9];
+
+                    int k = 0;
+                    for (int i = 0; i < 3; i++)
+                    {
+                        for (int j = 0; j < 3; j++)
+                        {
+                            pixel[k] = texA.GetPixel(column + i, row + j)[channel];
+                            
+                            k++;
+                        }
+                    }
+
+                    float x = pixel[2] + pixel[5] + pixel[8];
+                    float y = pixel[0] + pixel[3] + pixel[6];
+
+                    sum[channel] = x - y;
+                }
+                
+                texture.SetPixel(column, row, new Color(sum[0], sum[1], sum[2]));
+            }
+        }
+
+        Clean();
+    }
+    
+    public void PrewittGy()
+    {
+        Image a = images[0];
+
+        var texA = a.sprite.texture;
+        texture = new Texture2D(texA.width, texA.height);
+        
+        for (int column = 0; column < texture.width; column++)
+        {
+            for (int row = 0; row < texture.height; row++)
+            {
+                float[] sum = new float[3];
+                
+                for (int channel = 0; channel < 3; channel++)
+                {
+                    float[] pixel = new float[9];
+
+                    int k = 0;
+                    for (int i = 0; i < 3; i++)
+                    {
+                        for (int j = 0; j < 3; j++)
+                        {
+                            pixel[k] = texA.GetPixel(column + i, row + j)[channel];
+                            
+                            k++;
+                        }
+                    }
+
+                    float x = pixel[6] + pixel[7] + pixel[8];
+                    float y = pixel[1] + pixel[2] + pixel[3];
+
+                    sum[channel] = x - y;
+                }
+                
+                texture.SetPixel(column, row, new Color(sum[0], sum[1], sum[2]));
+            }
+        }
+        
+        Clean();
+    }
+    
+    public void SobelGx()
+    {
+        Image a = images[0];
+
+        var texA = a.sprite.texture;
+        texture = new Texture2D(texA.width, texA.height);
+        
+        for (int column = 0; column < texture.width; column++)
+        {
+            for (int row = 0; row < texture.height; row++)
+            {
+                float[] sum = new float[3];
+                
+                for (int channel = 0; channel < 3; channel++)
+                {
+                    float[] pixel = new float[9];
+
+                    int k = 0;
+                    for (int i = 0; i < 3; i++)
+                    {
+                        for (int j = 0; j < 3; j++)
+                        {
+                            pixel[k] = texA.GetPixel(column + i, row + j)[channel];
+                            
+                            k++;
+                        }
+                    }
+
+                    float x = pixel[2] + (2 * pixel[5]) + pixel[8];
+                    float y = pixel[0] + (2 * pixel[3]) + pixel[6];
+
+                    sum[channel] = x - y;
+                }
+                
+                texture.SetPixel(column, row, new Color(sum[0], sum[1], sum[2]));
+            }
+        }
+        
+        Clean();
+    }
+    
+    public void SobelGy()
+    {
+        Image a = images[0];
+
+        var texA = a.sprite.texture;
+        texture = new Texture2D(texA.width, texA.height);
+        
+        for (int column = 0; column < texture.width; column++)
+        {
+            for (int row = 0; row < texture.height; row++)
+            {
+                float[] sum = new float[3];
+                
+                for (int channel = 0; channel < 3; channel++)
+                {
+                    float[] pixel = new float[9];
+
+                    int k = 0;
+                    for (int i = 0; i < 3; i++)
+                    {
+                        for (int j = 0; j < 3; j++)
+                        {
+                            pixel[k] = texA.GetPixel(column + i, row + j)[channel];
+                            
+                            k++;
+                        }
+                    }
+
+                    float x = pixel[6] + (2 * pixel[7]) + pixel[8];
+                    float y = pixel[0] + (2 * pixel[1]) + pixel[2];
+
+                    sum[channel] = x - y;
+                }
+                
+                texture.SetPixel(column, row, new Color(sum[0], sum[1], sum[2]));
+            }
+        }
+        
+        Clean();
+    }
+    
+    public void Krish()
+    {
+        Image a = images[0];
+
+        var texA = a.sprite.texture;
+        texture = new Texture2D(texA.width, texA.height);
+        
+        for (int column = 0; column < texture.width; column++)
+        {
+            for (int row = 0; row < texture.height; row++)
+            {
+                float[] sum = new float[3];
+                
+                for (int channel = 0; channel < 3; channel++)
+                {
+                    float[] pixel = new float[9];
+
+                    int k = 0;
+                    for (int i = 0; i < 3; i++)
+                    {
+                        for (int j = 0; j < 3; j++)
+                        {
+                            pixel[k] = texA.GetPixel(column + i, row + j)[channel];
+                            
+                            k++;
+                        }
+                    }
+
+                    List<float> masks = new List<float>();
+
+                    float x = 5 * (pixel[0] + pixel[3] + pixel[6]);
+                    float y = 3 * (pixel[1] + pixel[2] + pixel[5] + pixel[7] + pixel[8]);
+                    masks.Add(x - y);
+                    
+                    x = 5 * (pixel[3] + pixel[6] + pixel[7]);
+                    y = 3 * (pixel[0] + pixel[1] + pixel[2] + pixel[5] + pixel[8]);
+                    masks.Add(x - y);
+                    
+                    x = 5 * (pixel[6] + pixel[7] + pixel[8]);
+                    y = 3 * (pixel[0] + pixel[1] + pixel[2] + pixel[3] + pixel[5]);
+                    masks.Add(x - y);
+                    
+                    x = 5 * (pixel[5] + pixel[7] + pixel[8]);
+                    y = 3 * (pixel[0] + pixel[1] + pixel[2] + pixel[3] + pixel[6]);
+                    masks.Add(x - y);
+                    
+                    x = 5 * (pixel[3] + pixel[5] + pixel[8]);
+                    y = 3 * (pixel[0] + pixel[1] + pixel[3] + pixel[6] + pixel[7]);
+                    masks.Add(x - y);
+                    
+                    x = 5 * (pixel[1] + pixel[2] + pixel[5]);
+                    y = 3 * (pixel[0] + pixel[3] + pixel[6] + pixel[7] + pixel[8]);
+                    masks.Add(x - y);
+                    
+                    x = 5 * (pixel[0] + pixel[1] + pixel[2]);
+                    y = 3 * (pixel[3] + pixel[5] + pixel[6] + pixel[7] + pixel[8]);
+                    masks.Add(x - y);
+                    
+                    x = 5 * (pixel[0] + pixel[1] + pixel[3]);
+                    y = 3 * (pixel[2] + pixel[5] + pixel[6] + pixel[7] + pixel[8]);
+                    masks.Add(x - y);
+
+                    sum[channel] = masks.Max();
+                }
+                
+                texture.SetPixel(column, row, new Color(sum[0], sum[1], sum[2]));
+            }
+        }
+        
+        Clean();
+    }    
+    
+    public void Robison()
+    {
+        Image a = images[0];
+
+        var texA = a.sprite.texture;
+        texture = new Texture2D(texA.width, texA.height);
+        
+        for (int column = 0; column < texture.width; column++)
+        {
+            for (int row = 0; row < texture.height; row++)
+            {
+                float[] sum = new float[3];
+                
+                for (int channel = 0; channel < 3; channel++)
+                {
+                    float[] pixel = new float[9];
+
+                    int k = 0;
+                    for (int i = 0; i < 3; i++)
+                    {
+                        for (int j = 0; j < 3; j++)
+                        {
+                            pixel[k] = texA.GetPixel(column + i, row + j)[channel];
+                            
+                            k++;
+                        }
+                    }
+
+                    List<float> masks = new List<float>();
+
+                    float x = pixel[0] + 2*pixel[3] + pixel[6];
+                    float y = pixel[2] + 2*pixel[5] + pixel[8];
+                    masks.Add(x - y);
+
+                    x = pixel[3] + 2*pixel[6] + pixel[7];
+                    y = pixel[1] + 2*pixel[2] + pixel[5];
+                    masks.Add(x - y);
+
+                    x = pixel[6] + 2*pixel[7] + pixel[8];
+                    y = pixel[0] + 2*pixel[1] + pixel[2];
+                    masks.Add(x - y);
+
+                    x = pixel[7] + 2*pixel[8] + pixel[5];
+                    y = pixel[3] + 2*pixel[0] + pixel[1];
+                    masks.Add(x - y);
+
+                    x = pixel[2] + 2*pixel[5] + pixel[8];
+                    y = pixel[0] + 2*pixel[3] + pixel[6];
+                    masks.Add(x - y);
+
+                    x = pixel[2] + 2*pixel[5] + pixel[8];
+                    y = pixel[0] + 2*pixel[3] + pixel[6];
+                    masks.Add(x - y);
+
+                    x = pixel[1] + 2*pixel[2] + pixel[5];
+                    y = pixel[3] + 2*pixel[6] + pixel[7];
+                    masks.Add(x - y);
+
+                    x = pixel[0] + 2*pixel[1] + pixel[2];
+                    y = pixel[6] + 2*pixel[7] + pixel[8];
+                    masks.Add(x - y);
+
+                    x = pixel[3] + 2*pixel[0] + pixel[1];
+                    y = pixel[7] + 2*pixel[8] + pixel[5];
+                    masks.Add(x - y);
+
+                    sum[channel] = masks.Max();
+                }
+                
+                texture.SetPixel(column, row, new Color(sum[0], sum[1], sum[2]));
+            }
+        }
+        
+        Clean();
+    }    
+    
+    public void Freichen()
+    {
+        Image a = images[0];
+
+        var texA = a.sprite.texture;
+        texture = new Texture2D(texA.width, texA.height);
+        
+        for (int column = 0; column < texture.width; column++)
+        {
+            for (int row = 0; row < texture.height; row++)
+            {
+                float[] sum = new float[3];
+                
+                for (int channel = 0; channel < 3; channel++)
+                {
+                    float[] pixel = new float[9];
+
+                    int k = 0;
+                    for (int i = 0; i < 3; i++)
+                    {
+                        for (int j = 0; j < 3; j++)
+                        {
+                            pixel[k] = texA.GetPixel(column + i, row + j)[channel];
+                            
+                            k++;
+                        }
+                    }
+
+                    List<float> masks = new List<float>();
+
+                    float x = pixel[0] + Mathf.Sqrt(2)*pixel[1] + pixel[2];
+                    float y = pixel[6] + Mathf.Sqrt(2)*pixel[7] + pixel[8];
+                    masks.Add(x - y);
+
+                    x = pixel[0] + Mathf.Sqrt(2)*pixel[3] + pixel[6];
+                    y = pixel[2] + Mathf.Sqrt(2)*pixel[5] + pixel[8];
+                    masks.Add(x - y);
+
+                    x = pixel[3] + Mathf.Sqrt(2)*pixel[2] + pixel[7];
+                    y = pixel[1] + Mathf.Sqrt(2)*pixel[6] + pixel[5];
+                    masks.Add(x - y);
+
+                    x = pixel[7] + Mathf.Sqrt(2)*pixel[0] + pixel[5];
+                    y = pixel[1] + Mathf.Sqrt(2)*pixel[8] + pixel[3];
+                    masks.Add(x - y);
+
+                    x = pixel[1] + pixel[7];
+                    y = pixel[3] + pixel[5];
+                    masks.Add(x - y);
+
+                    x = pixel[2] + pixel[6];
+                    y = pixel[0] + pixel[8];
+                    masks.Add(x - y);
+
+                    x = pixel[0] + pixel[2] + (pixel[4] * 4) + pixel[6] + pixel[8];
+                    y = pixel[1] + pixel[3] + pixel[5] + pixel[7];
+                    masks.Add(x - y);
+
+                    x = pixel[1] + pixel[3] + (pixel[4] * 4) + pixel[5] + pixel[7];
+                    y = pixel[0] + pixel[2] + pixel[6] + pixel[8];
+                    masks.Add(x - y);
+                    
+                    masks.Add(pixel.Sum());
+
+                    sum[channel] = masks.Max();
+                }
+                
+                texture.SetPixel(column, row, new Color(sum[0], sum[1], sum[2]));
+            }
+        }
+        
+        Clean();
+    }
+
+    public void Laplaciano(int type)
+    {
+        Image a = images[0];
+
+        var texA = a.sprite.texture;
+        texture = new Texture2D(texA.width, texA.height);
+
+        int start;
+
+        start = (int)Math.Floor(3 / 2.0f);
+
+        switch(type)
+        {
+            case 1:
+                for (int column = start; column < texture.width; column++)
+                {
+                    for (int row = start; row < texture.height; row++)
+                    {
+                        float[] sum = new float[3];
+
+                        for (int channel = 0; channel < 3; channel++)
+                        {
+                            float[] pixels = new float[9];
+
+                            int w = 0;
+                            for (int i = -start; i <= start; i++)
+                            {
+                                for (int j = -start; j <= start; j++)
+                                {
+                                    pixels[w] = texA.GetPixel(column + i, row + j)[channel];
+                                    w++;
+                                }
+                            }
+
+                            float x = 4 * pixels[4];
+                            float y = 0;
+
+                            for (int i = 0; i < pixels.Count(); i++)
+                            {
+                                if ((i + 1) % 2 == 0)
+                                {
+                                    y += pixels[i];
+                                }
+                            }
+
+                            sum[channel] = x - y;
+                        }
+
+                        texture.SetPixel(column, row, new Color(sum[0], sum[1], sum[2]));
+                    }
+                }
+                break;
+            
+            case 2:
+                for (int column = start; column < texture.width; column++)
+                {
+                    for (int row = start; row < texture.height; row++)
+                    {
+                        float[] sum = new float[3];
+
+                        for (int channel = 0; channel < 3; channel++)
+                        {
+                            float[] pixel = new float[9];
+
+                            int w = 0;
+                            for (int i = -start; i <= start; i++)
+                            {
+                                for (int j = -start; j <= start; j++)
+                                {
+                                    pixel[w] = texA.GetPixel(column + i, row + j)[channel];
+                                    w++;
+                                }
+                            }
+
+                            float x = 20 * pixel[4];
+                            float y = 4 * (pixel[1] + pixel[3] + pixel[5] + pixel[7]) + (pixel[0] + pixel[2] + pixel[6] + pixel[8]);
+
+                            sum[channel] = x - y;
+                        }
+
+                        texture.SetPixel(column, row, new Color(sum[0], sum[1], sum[2]));
+                    }
+                }
+                break;
+        }
+        
+        forceDo = false;
+    }
+
+    public void BrightnessLog()
+    {
+        {
+            Image a = images[0];
+     
+            var texA = a.sprite.texture;
+            texture = new Texture2D(texA.width, texA.height);
+     
+            float hi = 0.0f;
+                 
+            for (int column = 0; column < texture.width; column++)
+            {
+                for (int row = 0; row < texture.height; row++)
+                {
+                    for (int channel = 0; channel < 3; channel++)
+                    {
+                        float pixel = texA.GetPixel(column, row)[channel];
+                             
+                        if (hi < pixel)
+                        {
+                            hi = pixel;
+                        }
+                    }
+                }
+            }
+     
+            float x = (int)(255.0f / Mathf.Log(1.0f + (hi*255.0f)));
+                 
+            for (int column = 0; column < texture.width; column++)
+            {
+                for (int row = 0; row < texture.height; row++)
+                {
+                    float[] sum = new float[3];
+                     
+                    for (int channel = 0; channel < 3; channel++)
+                    {
+                        float pixel = texA.GetPixel(column, row)[channel] * 255;
+     
+                        sum[channel] = x * Mathf.Log(pixel + 1);
+                    }
+                     
+                    texture.SetPixel(column, row, new Color(sum[0]/255, sum[1]/255, sum[2]/255));
+                }
+            }
+             
+            Clean();
+        }
+    }     
+    
+    public void BrightnessExp()
+    {
+        {
+            Image a = images[0];
+     
+            var texA = a.sprite.texture;
+            texture = new Texture2D(texA.width, texA.height);
+     
+            float hi = 0.0f;
+                 
+            for (int column = 0; column < texture.width; column++)
+            {
+                for (int row = 0; row < texture.height; row++)
+                {
+                    for (int channel = 0; channel < 3; channel++)
+                    {
+                        float pixel = texA.GetPixel(column, row)[channel];
+                             
+                        if (hi < pixel)
+                        {
+                            hi = pixel;
+                        }
+                    }
+                }
+            }
+     
+            float x = (int)(255.0f / Mathf.Exp(1.0f + (hi*255.0f)));
+                 
+            for (int column = 0; column < texture.width; column++)
+            {
+                for (int row = 0; row < texture.height; row++)
+                {
+                    float[] sum = new float[3];
+                     
+                    for (int channel = 0; channel < 3; channel++)
+                    {
+                        float pixel = texA.GetPixel(column, row)[channel] * 255;
+     
+                        sum[channel] = x * (Mathf.Exp(pixel) + 1);
+                    }
+                     
+                    texture.SetPixel(column, row, new Color(sum[0]/255, sum[1]/255, sum[2]/255));
+                }
+            }
+             
+            Clean();
+        }
+    }       
+    
+    public void BrightnessSqrt()
+    {
+        Image a = images[0];
+     
+        var texA = a.sprite.texture;
+        texture = new Texture2D(texA.width, texA.height);
+     
+        float hi = 0.0f;
+                 
+        for (int column = 0; column < texture.width; column++)
+        {
+            for (int row = 0; row < texture.height; row++)
+            {
+                for (int channel = 0; channel < 3; channel++)
+                {
+                    float pixel = texA.GetPixel(column, row)[channel];
+                             
+                    if (hi < pixel)
+                    {
+                        hi = pixel;
+                    }
+                }
+            }
+        }
+     
+        float x = (int)(255.0f / Mathf.Sqrt(1.0f + (hi*255.0f)));
+                 
+        for (int column = 0; column < texture.width; column++)
+        {
+            for (int row = 0; row < texture.height; row++)
+            {
+                float[] sum = new float[3];
+                     
+                for (int channel = 0; channel < 3; channel++)
+                {
+                    float pixel = texA.GetPixel(column, row)[channel] * 255;
+     
+                    sum[channel] = x * Mathf.Sqrt(pixel);
+                }
+                     
+                texture.SetPixel(column, row, new Color(sum[0]/255, sum[1]/255, sum[2]/255));
+            }
+        }
+             
+        Clean();
+    }      
+    
+    public void BrightnessSquare()
+    {
+        Image a = images[0];
+     
+        var texA = a.sprite.texture;
+        texture = new Texture2D(texA.width, texA.height);
+     
+        float hi = 0.0f;
+                 
+        for (int column = 0; column < texture.width; column++)
+        {
+            for (int row = 0; row < texture.height; row++)
+            {
+                for (int channel = 0; channel < 3; channel++)
+                {
+                    float pixel = texA.GetPixel(column, row)[channel];
+                             
+                    if (hi < pixel)
+                    {
+                        hi = pixel;
+                    }
+                }
+            }
+        }
+     
+        float x = (int)(255.0f / Mathf.Pow(1.0f + (hi*255.0f), 2));
+                 
+        for (int column = 0; column < texture.width; column++)
+        {
+            for (int row = 0; row < texture.height; row++)
+            {
+                float[] sum = new float[3];
+                     
+                for (int channel = 0; channel < 3; channel++)
+                {
+                    float pixel = texA.GetPixel(column, row)[channel] * 255;
+     
+                    sum[channel] = x * Mathf.Pow(pixel, 2);
+                }
+                     
+                texture.SetPixel(column, row, new Color(sum[0]/255, sum[1]/255, sum[2]/255));
+            }
+        }
+             
+        Clean();
+    } 
+    
+    public void YUV(int color)
+    {
+        Image a = images[0];
+     
+        var texA = a.sprite.texture;
+        texture = new Texture2D(texA.width, texA.height);
+     
+        float hi = 0.0f;
+                 
+        for (int column = 0; column < texture.width; column++)
+        {
+            for (int row = 0; row < texture.height; row++)
+            {
+                float r = texA.GetPixel(column, row)[0];
+                float g = texA.GetPixel(column, row)[1];
+                float b = texA.GetPixel(column, row)[2];
+
+                float y = (0.299f * r) + (0.587f * g) + (0.114f * b);
+                float u = 0.492f * (b - y);
+                float v = 0.877f * (r - y);
+                
+                switch (color)
+                {
+                    case 0:
+                        texture.SetPixel(column, row, new Color(y, y, y));
+                        break;
+                    
+                    case 1:
+                        texture.SetPixel(column, row, new Color(u, u, 0));
+                        break;
+                    
+                    case 2:
+                        texture.SetPixel(column, row, new Color(0, v, v));
+                        break;
+                }
+            }
+        }
+
+        forceDo = false;
+    }
+
 
     // Gets and Sets ------------------------------------------
     public bool GetState() { return state; }

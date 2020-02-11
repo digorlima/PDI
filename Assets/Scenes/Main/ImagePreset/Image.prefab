@@ -317,7 +317,6 @@ GameObject:
   - component: {fileID: 5082298946570081460}
   - component: {fileID: 8087661201738174412}
   - component: {fileID: 670523599453506546}
-  - component: {fileID: 1340753323302036547}
   m_Layer: 5
   m_Name: Preset
   m_TagString: Untagged
@@ -949,7 +948,7 @@ MonoBehaviour:
       Event:
         m_PersistentCalls:
           m_Calls:
-          - m_Target: {fileID: 1340753323302036547}
+          - m_Target: {fileID: 0}
             m_MethodName: AddImage
             m_Mode: 2
             m_Arguments:
@@ -1607,22 +1606,6 @@ MonoBehaviour:
   TargetLabel: 0
   TextLabel: {fileID: 0}
   ToggleProgressor: {fileID: 0}
---- !u!114 &1340753323302036547
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4271317509444185758}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c5de3ef0b5a665d4fb23900d85bcaa37, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  allImages: {fileID: 0}
-  imagePlaceHolder: {fileID: 0}
-  borderSlider: {fileID: 0}
-  kuwaharaInput: {fileID: 0}
 --- !u!1 &8023412337457346175
 GameObject:
   m_ObjectHideFlags: 0
